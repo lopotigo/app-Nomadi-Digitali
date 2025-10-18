@@ -1,0 +1,6 @@
+pico PROGRESSO_2025-10-17.md
+pico map.htmlgit init
+git add README.md PROGRESSO_2025-10-17.md map.html
+git commit -m "Primo commit: aggiunti README, progressi e mappa interattiva"
+
+git commit -m "Primo commit: aggiunti README, progressi e mappa interattiva"
