@@ -1,35 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-  <title>Nomadi Digitali - Home</title>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="App Nomadi Digitali - La community italiana per lavorare ovunque. Trova luoghi, risorse e connettiti con altri nomadi digitali."/>
+  <meta name="keywords" content="nomadi digitali, digital nomads, remote work, lavoro remoto, coworking, Italia"/>
+  <meta name="author" content="Nomadi Digitali Community"/>
+  <title>Nomadi Digitali - Home | Community Italiana</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-    header { background: #379a7c; color: #fff; padding: 30px; text-align: center; }
-    main { padding: 40px 10px; text-align: center; }
-    a.button {
-      background: #379a7c;
-      color: #fff;
-      padding: 15px 30px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 1.2em;
-      transition: background 0.2s;
-      margin-top: 30px;
-      display: inline-block;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    a.button:hover { background: #28755c; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: linear-gradient(135deg, #f9f9f9 0%, #e8f5f1 100%);
+      min-height: 100vh;
+    }
+    header { 
+      background: linear-gradient(135deg, #379a7c 0%, #2d7a63 100%);
+      color: #fff; 
+      padding: 50px 20px; 
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    header p {
+      font-size: 1.2em;
+      opacity: 0.95;
+    }
+    main { 
+      padding: 60px 20px; 
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    main p {
+      font-size: 1.3em;
+      color: #333;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    a.button {
+      background: linear-gradient(135deg, #379a7c 0%, #2d7a63 100%);
+      color: #fff;
+      padding: 18px 40px;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 1.2em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(55, 154, 124, 0.3);
+    }
+    a.button:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(55, 154, 124, 0.4);
+      background: linear-gradient(135deg, #2d7a63 0%, #379a7c 100%);
+    }
+    .features {
+      margin-top: 50px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      text-align: left;
+    }
+    .feature-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    .feature-card h3 {
+      color: #379a7c;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+    .feature-card p {
+      font-size: 1em;
+      color: #666;
+      line-height: 1.5;
+    }
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      background: white;
+      margin-top: 50px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Benvenuto su Nomadi Digitali</h1>
-    <p>La community italiana per lavorare ovunque.</p>
+    <h1>🌍 Benvenuto su Nomadi Digitali</h1>
+    <p>La community italiana per lavorare ovunque nel mondo</p>
   </header>
   <main>
-    <p>Scopri la <b>mappa interattiva</b> dei Nomadi Digitali!</p>
-    <a href="map.html" class="button">Vai alla Mappa</a>
+    <p>Scopri la <b>mappa interattiva</b> dei luoghi preferiti dai Nomadi Digitali italiani!</p>
+    <a href="map.html" class="button">🗺️ Vai alla Mappa Interattiva</a>
+    
+    <div class="features">
+      <div class="feature-card">
+        <h3>📍 Luoghi Verificati</h3>
+        <p>Trova coworking, café e spazi ideali per lavorare in remoto, segnalati dalla community.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🤝 Community Attiva</h3>
+        <p>Connettiti con altri nomadi digitali italiani e condividi le tue esperienze.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌐 Sempre Aggiornata</h3>
+        <p>Aggiungi nuovi luoghi e mantieni la mappa sempre aggiornata per tutti.</p>
+      </div>
+    </div>
   </main>
+  <footer>
+    <p>Made with ❤️ by the Italian Digital Nomads Community</p>
+  </footer>
 </body>
 </html>

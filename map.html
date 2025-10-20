@@ -1,54 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-  <title>Mappa Nomadi Digitali</title>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="Mappa interattiva dei luoghi preferiti dai Nomadi Digitali italiani. Aggiungi e scopri coworking, café e spazi per lavorare in remoto."/>
+  <meta name="keywords" content="mappa nomadi digitali, coworking map, remote work locations, luoghi lavoro remoto"/>
+  <title>Mappa Interattiva | Nomadi Digitali</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    #map { height: 100vh; }
-    .leaflet-popup-content input, .leaflet-popup-content textarea {
-      display: block; width: 95%; margin-bottom: 10px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #map-container {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+    }
+    #map { 
+      height: 100%; 
+      width: 100%;
+    }
+    .map-header {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 15px 30px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .map-header h1 {
+      font-size: 1.5em;
+      color: #379a7c;
+      margin-bottom: 5px;
+    }
+    .map-header p {
+      font-size: 0.9em;
+      color: #666;
+    }
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: #379a7c;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(55, 154, 124, 0.3);
+      transition: all 0.3s ease;
+    }
+    .back-button:hover {
+      background: #2d7a63;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(55, 154, 124, 0.4);
+    }
+    .leaflet-popup-content {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .leaflet-popup-content input, 
+    .leaflet-popup-content textarea {
+      display: block; 
+      width: 100%; 
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+    .leaflet-popup-content input:focus,
+    .leaflet-popup-content textarea:focus {
+      outline: none;
+      border-color: #379a7c;
+    }
+    .leaflet-popup-content textarea {
+      resize: vertical;
+      min-height: 80px;
     }
     .leaflet-popup-content button {
-      background: #379a7c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+      background: linear-gradient(135deg, #379a7c 0%, #2d7a63 100%);
+      color: #fff; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 8px; 
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(55, 154, 124, 0.3);
+    }
+    .leaflet-popup-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(55, 154, 124, 0.4);
+    }
+    .leaflet-popup-content b {
+      color: #379a7c;
+      font-size: 1.1em;
+    }
+    .instruction-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: white;
+      padding: 15px 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-size: 14px;
+      color: #666;
+      max-width: 90%;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .map-header {
+        top: 70px;
+        padding: 10px 20px;
+      }
+      .map-header h1 {
+        font-size: 1.2em;
+      }
+      .map-header p {
+        font-size: 0.8em;
+      }
+      .instruction-box {
+        font-size: 12px;
+        padding: 10px 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="map"></div>
+  <div id="map-container">
+    <a href="index.html" class="back-button">← Home</a>
+    <div class="map-header">
+      <h1>🗺️ Mappa Nomadi Digitali</h1>
+      <p>Clicca sulla mappa per aggiungere un nuovo luogo</p>
+    </div>
+    <div id="map"></div>
+    <div class="instruction-box">
+      💡 <b>Suggerimento:</b> Clicca su qualsiasi punto della mappa per aggiungere un nuovo luogo di interesse!
+    </div>
+  </div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    var map = L.map('map').setView([45.4642, 9.19], 5);
+    // Inizializza la mappa centrata sull'Italia
+    var map = L.map('map').setView([41.9028, 12.4964], 6);
 
+    // Aggiungi layer OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '© OpenStreetMap'
+      maxZoom: 19,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    // Aggiungi alcuni marker di esempio
+    var exampleMarkers = [
+      {lat: 41.9028, lng: 12.4964, title: "Roma", desc: "Capitale d'Italia - Tanti coworking e café"},
+      {lat: 45.4642, lng: 9.1900, title: "Milano", desc: "Hub del business italiano - Ottimi spazi coworking"},
+      {lat: 43.7696, lng: 11.2558, title: "Firenze", desc: "Arte e cultura - Atmosfera rilassata per lavorare"}
+    ];
+
+    exampleMarkers.forEach(function(marker) {
+      L.marker([marker.lat, marker.lng])
+        .addTo(map)
+        .bindPopup('<b>' + marker.title + '</b><br>' + marker.desc);
+    });
+
+    // Gestione click sulla mappa per aggiungere nuovi marker
     map.on('click', function(e) {
       var latlng = e.latlng;
       var formHtml = `
-        <b>Aggiungi un luogo</b><br>
-        <input type="text" id="markerTitle" placeholder="Nome luogo"/><br>
-        <textarea id="markerDesc" placeholder="Descrizione"></textarea><br>
-        <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">Aggiungi!</button>
+        <div style="min-width: 200px;">
+          <b>✨ Aggiungi un nuovo luogo</b><br><br>
+          <input type="text" id="markerTitle" placeholder="Nome del luogo (es. Café Nomade)"/>
+          <textarea id="markerDesc" placeholder="Descrizione: cosa rende questo luogo speciale per i nomadi digitali?"></textarea>
+          <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">➕ Aggiungi Luogo</button>
+        </div>
       `;
       var popup = L.popup()
         .setLatLng(latlng)
         .setContent(formHtml)
         .openOn(map);
 
+      // Funzione per aggiungere il marker
       window.addMarker = function(lat, lng) {
-        var title = document.getElementById('markerTitle').value || 'Senza nome';
-        var desc = document.getElementById('markerDesc').value || '';
+        var title = document.getElementById('markerTitle').value || 'Luogo senza nome';
+        var desc = document.getElementById('markerDesc').value || 'Nessuna descrizione';
+        
+        // Crea il marker
         L.marker([lat, lng]).addTo(map)
           .bindPopup('<b>' + title + '</b><br>' + desc)
           .openPopup();
+        
+        // Chiudi il popup del form
         map.closePopup();
+        
+        // Pulisci la funzione globale
         delete window.addMarker;
+        
+        // Feedback visivo
+        console.log('✅ Luogo aggiunto:', title);
       };
     });
+
+    // Log per debug
+    console.log('🗺️ Mappa Nomadi Digitali caricata con successo!');
   </script>
 </body>
 </html>
