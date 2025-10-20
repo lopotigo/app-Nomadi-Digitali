@@ -1,22 +1,44 @@
-# app-Nomadi-Digitali
+# 📊 Diario dei Progressi - App Nomadi Digitali
 
-Questa applicazione è pensata per aiutare i nomadi digitali a trovare risorse, luoghi e strumenti utili durante i loro viaggi.  
-Include una mappa interattiva, una sezione progresso e altre funzionalità in sviluppo.
+## 🗓️ 17 Ottobre 2025
 
-## Struttura del progetto
+### ✅ Completato
 
-- **README.md** — Documentazione del progetto
-- **PROGRESSO_2025-10-17.md** — Diario degli avanzamenti
-- **map.html** — Mappa interattiva
+- [x] Creazione della struttura base del progetto
+- [x] Sviluppo della homepage (`index.html`)
+  - Design responsive e moderno
+  - Colori tema verde (#379a7c)
+  - Link alla mappa interattiva
+- [x] Implementazione della mappa interattiva (`map.html`)
+  - Integrazione di Leaflet.js
+  - Utilizzo di OpenStreetMap come base cartografica
+  - Funzionalità di aggiunta marker tramite click
+  - Form popup per inserimento dati marker (nome e descrizione)
+- [x] Creazione della documentazione (`README.md`)
 
-## Funzionalità principali
+### 🔄 In Corso
 
-- Visualizzazione mappa delle location
-- Diario dei progressi
-- Guide e strumenti utili
+- [ ] Aggiunta di funzionalità di persistenza dei dati (localStorage)
+- [ ] Miglioramento dell'interfaccia utente
+- [ ] Aggiunta di categorie per i marker (coworking, café, hotel, ecc.)
 
-## Come contribuire
+### 📝 Prossimi Passi
 
-1. Fai un fork del progetto
-2. Crea una branch per la tua feature
-3. Fai una pull request
+- [ ] Implementare filtri per i marker sulla mappa
+- [ ] Aggiungere una sezione risorse/guide
+- [ ] Creare un sistema di recensioni per le location
+- [ ] Ottimizzare per dispositivi mobile
+- [ ] Aggiungere ricerca geolocalizzata
+
+## 🗓️ 20 Ottobre 2025
+
+### ✅ Completato
+
+- [x] Pulizia del repository (rimosso file con nome errato)
+- [x] Aggiunta del file `.gitignore`
+- [x] Miglioramento della documentazione README
+- [x] Aggiornamento del diario progressi con struttura migliorata
+
+---
+
+*Ultimo aggiornamento: 20 Ottobre 2025*

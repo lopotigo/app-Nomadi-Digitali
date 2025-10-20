@@ -1,0 +1,27 @@
+# Editor files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# System files
+Thumbs.db
+desktop.ini
+
+# Node modules (if needed in future)
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
