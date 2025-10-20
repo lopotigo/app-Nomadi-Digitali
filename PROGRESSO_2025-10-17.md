@@ -1,22 +1,16 @@
-# app-Nomadi-Digitali
+# Diario degli Avanzamenti - app-Nomadi-Digitali
 
-Questa applicazione è pensata per aiutare i nomadi digitali a trovare risorse, luoghi e strumenti utili durante i loro viaggi.  
-Include una mappa interattiva, una sezione progresso e altre funzionalità in sviluppo.
+## 2025-10-20
 
-## Struttura del progetto
+### Cleanup Repository
+- Rimosso file malformato "README.mdpico PROGRESSO_2025-10-17.mdoo"
+- Corretto README.md con la documentazione appropriata
+- Aggiornato questo file per essere un vero diario dei progressi
 
-- **README.md** — Documentazione del progetto
-- **PROGRESSO_2025-10-17.md** — Diario degli avanzamenti
-- **map.html** — Mappa interattiva
+## 2025-10-17
 
-## Funzionalità principali
-
-- Visualizzazione mappa delle location
-- Diario dei progressi
-- Guide e strumenti utili
-
-## Come contribuire
-
-1. Fai un fork del progetto
-2. Crea una branch per la tua feature
-3. Fai una pull request
+### Versione Iniziale
+- Creata homepage (`index.html`) con benvenuto e link alla mappa
+- Implementata mappa interattiva (`map.html`) usando Leaflet.js
+- Funzionalità per aggiungere marker personalizzati sulla mappa
+- Inizializzato repository Git
