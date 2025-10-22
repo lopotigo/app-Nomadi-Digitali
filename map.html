@@ -26,28 +26,76 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    // State for route creation
+    var routePoints = [];
+    var routeLine = null;
+    var routeMarkers = [];
+
+    // Function to calculate distance between two points (Haversine formula)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      var R = 6371; // Radius of Earth in km
+      var dLat = (lat2 - lat1) * Math.PI / 180;
+      var dLon = (lon2 - lon1) * Math.PI / 180;
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var distance = R * c;
+      return distance;
+    }
+
+    // Function to reset route
+    function resetRoute() {
+      routePoints = [];
+      if (routeLine) {
+        map.removeLayer(routeLine);
+        routeLine = null;
+      }
+      routeMarkers.forEach(function(marker) {
+        map.removeLayer(marker);
+      });
+      routeMarkers = [];
+    }
+
     map.on('click', function(e) {
       var latlng = e.latlng;
-      var formHtml = `
-        <b>Aggiungi un luogo</b><br>
-        <input type="text" id="markerTitle" placeholder="Nome luogo"/><br>
-        <textarea id="markerDesc" placeholder="Descrizione"></textarea><br>
-        <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">Aggiungi!</button>
-      `;
-      var popup = L.popup()
-        .setLatLng(latlng)
-        .setContent(formHtml)
-        .openOn(map);
 
-      window.addMarker = function(lat, lng) {
-        var title = document.getElementById('markerTitle').value || 'Senza nome';
-        var desc = document.getElementById('markerDesc').value || '';
-        L.marker([lat, lng]).addTo(map)
-          .bindPopup('<b>' + title + '</b><br>' + desc)
-          .openPopup();
-        map.closePopup();
-        delete window.addMarker;
-      };
+      // Route creation logic
+      if (routePoints.length === 0) {
+        // First click - add first point
+        routePoints.push(latlng);
+        var marker = L.marker([latlng.lat, latlng.lng]).addTo(map);
+        routeMarkers.push(marker);
+      } else if (routePoints.length === 1) {
+        // Second click - add second point, draw line, show distance
+        routePoints.push(latlng);
+        var marker = L.marker([latlng.lat, latlng.lng]).addTo(map);
+        routeMarkers.push(marker);
+
+        // Draw red line
+        routeLine = L.polyline([
+          [routePoints[0].lat, routePoints[0].lng],
+          [routePoints[1].lat, routePoints[1].lng]
+        ], {color: 'red', weight: 3}).addTo(map);
+
+        // Calculate distance
+        var distance = calculateDistance(
+          routePoints[0].lat, routePoints[0].lng,
+          routePoints[1].lat, routePoints[1].lng
+        );
+
+        // Show distance in central popup
+        var centerLat = (routePoints[0].lat + routePoints[1].lat) / 2;
+        var centerLng = (routePoints[0].lng + routePoints[1].lng) / 2;
+        
+        L.popup()
+          .setLatLng([centerLat, centerLng])
+          .setContent('<b>Distanza percorso:</b><br>' + distance.toFixed(2) + ' km')
+          .openOn(map);
+      } else {
+        // Third click - reset
+        resetRoute();
+      }
     });
   </script>
 </body>
