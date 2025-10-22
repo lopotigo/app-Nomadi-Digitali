@@ -5,6 +5,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
   <style>
     #map { height: 100vh; }
     .leaflet-popup-content input, .leaflet-popup-content textarea {
@@ -13,11 +14,33 @@
     .leaflet-popup-content button {
       background: #379a7c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer;
     }
+    #routeBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: #379a7c;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    #routeBtn:hover {
+      background: #28755c;
+    }
+    #routeBtn.active {
+      background: #ff6b6b;
+    }
   </style>
 </head>
 <body>
+  <button id="routeBtn">Percorso</button>
   <div id="map"></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script>
     var map = L.map('map').setView([45.4642, 9.19], 5);
 
@@ -26,28 +49,111 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    var routeMode = false;
+    var routePoints = [];
+    var routeControl = null;
+    var tempMarkers = [];
+
+    document.getElementById('routeBtn').addEventListener('click', function() {
+      routeMode = !routeMode;
+      var btn = document.getElementById('routeBtn');
+      
+      if (routeMode) {
+        btn.textContent = 'Annulla Percorso';
+        btn.classList.add('active');
+        routePoints = [];
+        // Remove any existing route
+        if (routeControl) {
+          map.removeControl(routeControl);
+          routeControl = null;
+        }
+        // Remove temp markers
+        tempMarkers.forEach(function(marker) {
+          map.removeLayer(marker);
+        });
+        tempMarkers = [];
+      } else {
+        btn.textContent = 'Percorso';
+        btn.classList.remove('active');
+        routePoints = [];
+        // Remove temp markers
+        tempMarkers.forEach(function(marker) {
+          map.removeLayer(marker);
+        });
+        tempMarkers = [];
+      }
+    });
+
     map.on('click', function(e) {
       var latlng = e.latlng;
-      var formHtml = `
-        <b>Aggiungi un luogo</b><br>
-        <input type="text" id="markerTitle" placeholder="Nome luogo"/><br>
-        <textarea id="markerDesc" placeholder="Descrizione"></textarea><br>
-        <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">Aggiungi!</button>
-      `;
-      var popup = L.popup()
-        .setLatLng(latlng)
-        .setContent(formHtml)
-        .openOn(map);
+      
+      if (routeMode) {
+        // Routing mode
+        if (routePoints.length < 2) {
+          routePoints.push(latlng);
+          
+          // Add temporary marker
+          var markerIcon = routePoints.length === 1 ? '🅰️' : '🅱️';
+          var marker = L.marker(latlng, {
+            icon: L.divIcon({
+              html: '<div style="font-size: 24px;">' + markerIcon + '</div>',
+              className: 'route-marker',
+              iconSize: [30, 30]
+            })
+          }).addTo(map);
+          tempMarkers.push(marker);
+          
+          if (routePoints.length === 2) {
+            // Calculate route
+            if (routeControl) {
+              map.removeControl(routeControl);
+            }
+            
+            routeControl = L.Routing.control({
+              waypoints: [
+                L.latLng(routePoints[0].lat, routePoints[0].lng),
+                L.latLng(routePoints[1].lat, routePoints[1].lng)
+              ],
+              routeWhileDragging: true,
+              showAlternatives: false,
+              lineOptions: {
+                styles: [{color: '#379a7c', weight: 5}]
+              }
+            }).addTo(map);
+            
+            // Reset after showing route
+            setTimeout(function() {
+              var btn = document.getElementById('routeBtn');
+              btn.textContent = 'Percorso';
+              btn.classList.remove('active');
+              routeMode = false;
+              routePoints = [];
+            }, 500);
+          }
+        }
+      } else {
+        // Marker mode (original functionality)
+        var formHtml = `
+          <b>Aggiungi un luogo</b><br>
+          <input type="text" id="markerTitle" placeholder="Nome luogo"/><br>
+          <textarea id="markerDesc" placeholder="Descrizione"></textarea><br>
+          <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">Aggiungi!</button>
+        `;
+        var popup = L.popup()
+          .setLatLng(latlng)
+          .setContent(formHtml)
+          .openOn(map);
 
-      window.addMarker = function(lat, lng) {
-        var title = document.getElementById('markerTitle').value || 'Senza nome';
-        var desc = document.getElementById('markerDesc').value || '';
-        L.marker([lat, lng]).addTo(map)
-          .bindPopup('<b>' + title + '</b><br>' + desc)
-          .openPopup();
-        map.closePopup();
-        delete window.addMarker;
-      };
+        window.addMarker = function(lat, lng) {
+          var title = document.getElementById('markerTitle').value || 'Senza nome';
+          var desc = document.getElementById('markerDesc').value || '';
+          L.marker([lat, lng]).addTo(map)
+            .bindPopup('<b>' + title + '</b><br>' + desc)
+            .openPopup();
+          map.closePopup();
+          delete window.addMarker;
+        };
+      }
     });
   </script>
 </body>
