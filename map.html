@@ -26,6 +26,7 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    // Funzione per aggiungere marker
     map.on('click', function(e) {
       var latlng = e.latlng;
       var formHtml = `
@@ -49,6 +50,47 @@
         delete window.addMarker;
       };
     });
+
+    // Funzione CREA PERCORSO: doppio click per selezionare due punti e tracciare una linea
+    var percorsoPunti = [];
+    var percorsoLine;
+
+    function resetPercorso() {
+      percorsoPunti = [];
+      if (percorsoLine) {
+        map.removeLayer(percorsoLine);
+        percorsoLine = null;
+      }
+      alert('Percorso resettato! Seleziona due punti sulla mappa.');
+    }
+
+    // Pulsante per resettare il percorso (in alto a destra)
+    var resetBtn = L.control({position: 'topright'});
+    resetBtn.onAdd = function(map) {
+      var div = L.DomUtil.create('div', 'leaflet-bar');
+      div.innerHTML = '<button style="padding:5px 10px; font-size:1em;">Reset percorso</button>';
+      div.onclick = resetPercorso;
+      return div;
+    };
+    resetBtn.addTo(map);
+
+    // Doppio click per creare percorso
+    map.on('dblclick', function(e) {
+      if (percorsoPunti.length < 2) {
+        percorsoPunti.push([e.latlng.lat, e.latlng.lng]);
+      }
+      if (percorsoPunti.length === 2) {
+        if (percorsoLine) {
+          map.removeLayer(percorsoLine);
+        }
+        percorsoLine = L.polyline(percorsoPunti, {color: 'red', weight: 5}).addTo(map);
+      }
+    });
+
+    // Messaggio guida per l'utente
+    L.control
+      .attribution({position: 'bottomleft'})
+      .addAttribution('Doppio clic sulla mappa per creare un percorso tra due punti. Usa il pulsante in alto a destra per resettare.');
   </script>
 </body>
 </html>
