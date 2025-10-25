@@ -51,7 +51,7 @@
       };
     });
 
-    // Funzione CREA PERCORSO: doppio click per selezionare due punti e tracciare una linea
+    // Funzionalità CREA PERCORSO: seleziona più punti con doppio click, collega tutti con una linea
     var percorsoPunti = [];
     var percorsoLine;
 
@@ -61,7 +61,7 @@
         map.removeLayer(percorsoLine);
         percorsoLine = null;
       }
-      alert('Percorso resettato! Seleziona due punti sulla mappa.');
+      alert('Percorso resettato! Doppio clic sui punti da collegare.');
     }
 
     // Pulsante per resettare il percorso (in alto a destra)
@@ -74,15 +74,13 @@
     };
     resetBtn.addTo(map);
 
-    // Doppio click per creare percorso
+    // Doppio click per aggiungere punti al percorso
     map.on('dblclick', function(e) {
-      if (percorsoPunti.length < 2) {
-        percorsoPunti.push([e.latlng.lat, e.latlng.lng]);
+      percorsoPunti.push([e.latlng.lat, e.latlng.lng]);
+      if (percorsoLine) {
+        map.removeLayer(percorsoLine);
       }
-      if (percorsoPunti.length === 2) {
-        if (percorsoLine) {
-          map.removeLayer(percorsoLine);
-        }
+      if (percorsoPunti.length > 1) {
         percorsoLine = L.polyline(percorsoPunti, {color: 'red', weight: 5}).addTo(map);
       }
     });
@@ -90,7 +88,7 @@
     // Messaggio guida per l'utente
     L.control
       .attribution({position: 'bottomleft'})
-      .addAttribution('Doppio clic sulla mappa per creare un percorso tra due punti. Usa il pulsante in alto a destra per resettare.');
+      .addAttribution('Doppio clic sulla mappa per aggiungere punti e creare un percorso. Usa il pulsante in alto a destra per resettare.');
   </script>
 </body>
 </html>
