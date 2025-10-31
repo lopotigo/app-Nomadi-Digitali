@@ -1,0 +1,46 @@
+import requests
+import pandas as pd
+
+city = input("Inserisci la città (es: Milano): ").strip()
+print(f"Sto cercando spazi coworking nella città: {city}...")
+
+overpass_url = "http://overpass-api.de/api/interpreter"
+overpass_query = f"""
+[out:json];
+area[name="{city}"][admin_level=8];
+(
+  node["amenity"="coworking_space"](area);
+  node["office"="coworking"](area);
+  node["amenity"="community_centre"](area);
+);
+out body;
+"""
+
+response = requests.get(overpass_url, params={'data': overpass_query})
+print("Status code:", response.status_code)
+print("Response text:", response.text[:400])
+
+data = response.json()
+results = []
+for el in data.get("elements", []):
+    tags = el.get("tags", {})
+    name = tags.get("name", "")
+    wifi = tags.get("internet_access", "") or tags.get("wifi", "")
+    lat = el.get("lat", "")
+    lon = el.get("lon", "")
+    tipo = tags.get("amenity", "") or tags.get("office", "")
+    results.append({
+        "name": name,
+        "lat": lat,
+        "lon": lon,
+        "type": tipo,
+        "wifi": wifi
+    })
+
+df = pd.DataFrame(results)
+print("Risultato estratto:")
+print(df.head())
+
+csv_path = f"coworking_{city.lower()}.csv"
+df.to_csv(csv_path, index=False)
+print(f"Risultati salvati in {csv_path}")
