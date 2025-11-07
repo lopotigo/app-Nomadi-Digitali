@@ -1,0 +1,801 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.8 e802775f",
+  "osm3s": {
+    "timestamp_osm_base": "2025-11-07T07:49:36Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 2755830341,
+      "lat": 45.4887455,
+      "lon": 9.1872503,
+      "tags": {
+        "amenity": "coworking_space",
+        "name": "SpazioA"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2848143928,
+      "lat": 44.8132453,
+      "lon": 10.3403562,
+      "tags": {
+        "addr:city": "Parma",
+        "addr:housenumber": "4/1",
+        "addr:street": "Strada Naviglio Alto",
+        "amenity": "coworking_space",
+        "drink:club-mate": "no",
+        "email": "info@officineonoff.com",
+        "hackerspace": "makerspace",
+        "internet_access": "wlan",
+        "internet_access:ssid": "ON/OFF WIFI OSPITI",
+        "leisure": "hackerspace",
+        "name": "Officine On/Off",
+        "note": "Spazio di Coworking On/Off",
+        "opening_hours": "Mo-Fr 09:00-18:00+",
+        "phone": "+39 328 916 6131",
+        "service:3dprinter": "yes",
+        "service:bicycle:diy": "yes",
+        "service:cnc_drilling_machine": "no",
+        "service:lasercutter": "yes",
+        "service:media_studio": "limited",
+        "service:sewing_machine": "no",
+        "service:workshop:ceramics": "limited",
+        "service:workshop:metal": "limited",
+        "service:workshop:wood": "no",
+        "start_date": "2013-11-23",
+        "website": "https://officineonoff.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2935558742,
+      "lat": 47.0667555,
+      "lon": 15.4337764,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "6",
+        "addr:postcode": "8020",
+        "addr:street": "Schiffgasse",
+        "amenity": "coworking_space",
+        "check_date:currency:XBT": "2023-01-24",
+        "currency:XBT": "yes",
+        "email": "info@infinitivefactory.com",
+        "name": "The Infinite Factory",
+        "opening_hours": "Mo-Th 09:30-17:30; Fr 09:30-13:00",
+        "payment:lightning": "no",
+        "payment:lightning_contactless": "no",
+        "payment:onchain": "yes",
+        "phone": "+43 316 30 64 67",
+        "website": "https://infinitivefactory.com/kontakt/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2944117537,
+      "lat": 45.506526,
+      "lon": 9.2281176,
+      "tags": {
+        "amenity": "coworking_space",
+        "email": "hello@coworkinglogin.it",
+        "name": "Coworking LOGIN",
+        "opening_hours": "Mo-Fr 08:00-22:30; Sa 08:00-13:00; Su closed",
+        "phone": "+39 02 2551 4300",
+        "website": "https://www.coworkinglogin.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3194891678,
+      "lat": 45.4453161,
+      "lon": 10.968964,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:street": "Via Antonio Pigafetta",
+        "amenity": "coworking_space",
+        "name": "GoPIGAGo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3269707069,
+      "lat": 44.9185723,
+      "lon": 8.6171883,
+      "tags": {
+        "addr:city": "Alessandria",
+        "addr:housenumber": "95",
+        "addr:postcode": "15121",
+        "addr:street": "Via Verona",
+        "amenity": "coworking_space",
+        "building": "yes",
+        "email": "host@lab121.org",
+        "name": "Centro di Coworking LAB121",
+        "phone": "+39 388 9571115",
+        "website": "https://www.lab121.org/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3844497966,
+      "lat": 44.4130442,
+      "lon": 8.9245307,
+      "tags": {
+        "addr:housenumber": "16",
+        "addr:street": "Calata Andalò di Negro",
+        "amenity": "coworking_space",
+        "name": "Condiviso",
+        "website": "https://condiviso.coop/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3983670577,
+      "lat": 45.4973191,
+      "lon": 9.2212993,
+      "tags": {
+        "addr:city": "Milano",
+        "addr:housenumber": "16",
+        "addr:street": "Via Merano",
+        "amenity": "coworking_space",
+        "currency:BCH": "yes",
+        "name": "Talent Garden",
+        "phone": "+39 392 913 4567",
+        "website": "http://milano-merano.talentgarden.org/",
+        "website:mobile": "https://chainblock.it"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977778,
+      "lat": 47.0717202,
+      "lon": 15.4378451,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "2",
+        "addr:postcode": "8010",
+        "addr:street": "Sackstraße",
+        "amenity": "coworking_space",
+        "capacity": "8",
+        "name": "C42",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977779,
+      "lat": 47.0706856,
+      "lon": 15.4374874,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "4",
+        "addr:postcode": "8020",
+        "addr:street": "Neue-Welt-Gasse",
+        "amenity": "coworking_space",
+        "capacity": "7",
+        "name": "Coworking Ideenreich",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977780,
+      "lat": 47.0774657,
+      "lon": 15.4286645,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "6",
+        "addr:postcode": "8020",
+        "addr:street": "Wiener Straße",
+        "amenity": "coworking_space",
+        "capacity": "7",
+        "name": "Coworking im Architekturhaus",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977781,
+      "lat": 47.0723232,
+      "lon": 15.4559922,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "51",
+        "addr:postcode": "8010",
+        "addr:street": "Merangasse",
+        "amenity": "coworking_space",
+        "capacity": "8",
+        "name": "Coworking im Kulturverein Fönfrisur",
+        "source": "\"Woche\", 24.2.2016",
+        "website": "https://sharedspaces.at/coworking-space/space/foenfrisur-coworking-sucht-dich"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977782,
+      "lat": 47.0752341,
+      "lon": 15.4314008,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "40",
+        "addr:postcode": "8020",
+        "addr:street": "Lendplatz",
+        "amenity": "coworking_space",
+        "capacity": "4",
+        "contact:email": "coworking@engarde.net",
+        "name": "En Garde",
+        "source": "\"Woche\", 24.2.2016",
+        "website": "https://www.engarde.net/co-working-graz/",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977783,
+      "lat": 47.0713185,
+      "lon": 15.4524222,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "16",
+        "addr:postcode": "8010",
+        "addr:street": "Schillerstraße",
+        "amenity": "coworking_space",
+        "capacity": "7",
+        "contact:facebook": "https://www.facebook.com/HeimatCoworkingSpace",
+        "contact:mobile": "+43 699 11955551",
+        "contact:website": "http://coworkinggraz.net/project/heimat/",
+        "name": "HEIMAT",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977784,
+      "lat": 47.073975,
+      "lon": 15.4239032,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housename": "Rondo",
+        "addr:housenumber": "1",
+        "addr:postcode": "8020",
+        "addr:street": "Marienplatz",
+        "amenity": "coworking_space",
+        "capacity": "4",
+        "elevator": "yes",
+        "name": "Managerie",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977785,
+      "lat": 47.0739349,
+      "lon": 15.4328425,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "30",
+        "addr:postcode": "8020",
+        "addr:street": "Mariahilferstraße",
+        "amenity": "coworking_space",
+        "capacity": "9",
+        "name": "Printi",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977786,
+      "lat": 47.0719778,
+      "lon": 15.4377243,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "6",
+        "addr:postcode": "8010",
+        "addr:street": "Sackstraße",
+        "amenity": "coworking_space",
+        "capacity": "18",
+        "name": "Sechserhaus",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977787,
+      "lat": 47.0739921,
+      "lon": 15.4239115,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housename": "Rondo",
+        "addr:housenumber": "1",
+        "addr:postcode": "8020",
+        "addr:street": "Marienplatz",
+        "amenity": "coworking_space",
+        "capacity": "13",
+        "elevator": "yes",
+        "full_name": "blueLAB Coworking im Rondo",
+        "level": "2",
+        "name": "blueLAB Coworking",
+        "source": "\"Woche\", 24.2.2016",
+        "wheelchair": "limited"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028977788,
+      "lat": 47.070651,
+      "lon": 15.4556334,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "31",
+        "addr:postcode": "8010",
+        "addr:street": "Schillerstraße",
+        "amenity": "coworking_space",
+        "capacity": "7",
+        "contact:email": "office@eeza.at",
+        "name": "eeza.",
+        "opening_hours": "Mo-Fr 09:00-18:00",
+        "phone": "+43 676 5511640",
+        "source": "\"Woche\", 24.2.2016",
+        "website": "http://www.eeza.at/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4028979389,
+      "lat": 47.0717727,
+      "lon": 15.4271829,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "13",
+        "addr:postcode": "8020",
+        "addr:street": "Strauchergasse",
+        "amenity": "coworking_space",
+        "capacity": "24",
+        "full_name": "lab10 collective eG",
+        "level": "0",
+        "name": "lab10",
+        "operator": "Thomas Enzinger",
+        "source": "\"Woche\", 24.2.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4098355464,
+      "lat": 47.0646185,
+      "lon": 15.4414862,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "50",
+        "addr:postcode": "8010",
+        "addr:street": "Grazbachgasse",
+        "amenity": "coworking_space",
+        "name": "Fuffzk",
+        "operator": "Verein Jakomini",
+        "start_date": "7.4.2016"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4243022473,
+      "lat": 45.6949133,
+      "lon": 9.6686242,
+      "tags": {
+        "addr:city": "Bergamo",
+        "addr:housenumber": "1",
+        "addr:postcode": "24122",
+        "addr:street": "Galleria Santa Marta",
+        "amenity": "coworking_space",
+        "loc_ref": "70300",
+        "name": "Talent garden",
+        "source": "survey"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4297207303,
+      "lat": 47.0735858,
+      "lon": 15.4352598,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "22",
+        "addr:postcode": "8010",
+        "addr:street": "Kaiser-Franz-Josef-Kai",
+        "amenity": "coworking_space",
+        "source": "survey"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4354592449,
+      "lat": 46.2312489,
+      "lon": 14.6097928,
+      "tags": {
+        "addr:city": "Kamnik",
+        "addr:housenumber": "134",
+        "addr:postcode": "1241",
+        "addr:street": "Fužine",
+        "amenity": "coworking_space",
+        "internet_access": "wlan",
+        "internet_access:fee": "no",
+        "internet_access:ssid": "KIKstarter",
+        "name": "KIKštarter",
+        "ref:gurs:hs_mid": "17887025",
+        "website": "https://www.kotlovnica.si/slo/kikstarter"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4382019124,
+      "lat": 46.6647697,
+      "lon": 16.1709675,
+      "tags": {
+        "addr:city": "Murska Sobota",
+        "addr:housenumber": "41A",
+        "addr:postcode": "9000",
+        "addr:street": "Lendavska ulica",
+        "amenity": "coworking_space",
+        "internet_access": "yes",
+        "internet_access:fee": "customers",
+        "name": "Aurora Coworking",
+        "ref:gurs:hs_mid": "13528284",
+        "source:addr": "GURS"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4568362283,
+      "lat": 45.5091889,
+      "lon": 9.2062173,
+      "tags": {
+        "amenity": "coworking_space",
+        "name": "Coworking Milano Bicocca"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4636212782,
+      "lat": 45.9857128,
+      "lon": 8.8688103,
+      "tags": {
+        "addr:city": "Pura",
+        "addr:country": "CH",
+        "addr:housenumber": "30",
+        "addr:street": "Contrada Cozóra",
+        "amenity": "coworking_space",
+        "name": "Inno & Fashion Center SA",
+        "phone": "+41 91 6009071",
+        "website": "http://www.ifcenter.ch"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4652743161,
+      "lat": 45.4017092,
+      "lon": 9.1563155,
+      "tags": {
+        "addr:city": "Milano",
+        "addr:housenumber": "5",
+        "addr:postcode": "20142",
+        "addr:street": "Via Valleambrosia",
+        "amenity": "coworking_space",
+        "description": "Coworking artigianale a Milano, dedicato alle arti, ai mestieri artigiani e agli hobbisti.",
+        "email": "co.labo.coworking@gmail.com",
+        "name": "Co.Labo",
+        "phone": "+39 02 89518418",
+        "website": "http://www.mumblemumble.net/co-labo/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4670230754,
+      "lat": 47.0652087,
+      "lon": 15.452355,
+      "tags": {
+        "access": "private",
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "16",
+        "addr:postcode": "8010",
+        "addr:street": "Stremayrgasse",
+        "amenity": "coworking_space",
+        "levels": "1,3,4",
+        "name": "Science Park Graz",
+        "office": "company",
+        "source": "survey",
+        "website": "https://sciencepark.at/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4732453963,
+      "lat": 44.3086837,
+      "lon": 8.4800839,
+      "tags": {
+        "addr:housenumber": "21/6",
+        "addr:postcode": "17100",
+        "addr:street": "Via Pietro Paleocapa",
+        "amenity": "coworking_space",
+        "name": "COworking SAvona",
+        "office": "association",
+        "website": "http://www.coworking-savona.org/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4744959032,
+      "lat": 45.6942582,
+      "lon": 9.6892519,
+      "tags": {
+        "amenity": "coworking_space",
+        "biergarten": "yes",
+        "entrance": "yes",
+        "level": "0",
+        "loc_ref": "10506",
+        "name": "Arti Lab",
+        "source": "survey",
+        "website": "http://www.artilab.eu/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5139568223,
+      "lat": 41.884501,
+      "lon": 12.5102056,
+      "tags": {
+        "addr:housenumber": "4",
+        "addr:street": "Via Veio",
+        "amenity": "coworking_space",
+        "cafe": "yes",
+        "contact:facebook": "https://www.facebook.com/anticaferoma/",
+        "email": "roma@anticafe.it",
+        "internet_access": "wlan",
+        "name": "Anticafé",
+        "name:en": "Anticafé",
+        "opening_hours": "Mo-Fr 09:00-21:00; Sa-Su 10:00-21:00",
+        "phone": "+39 0670494442",
+        "website": "https://www.anticafe.eu/portfolio/anticafe-roma/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5975317940,
+      "lat": 43.6579956,
+      "lon": 10.4371118,
+      "tags": {
+        "addr:housenumber": "6",
+        "addr:street": "Via Umberto Forti",
+        "amenity": "coworking_space",
+        "name": "Talent Garden"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6586028579,
+      "lat": 47.077193,
+      "lon": 15.4458701,
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "11",
+        "addr:postcode": "8010",
+        "addr:street": "Villefortgasse",
+        "amenity": "coworking_space",
+        "capacity": "10",
+        "contact:email": "contact@coworking-geidorf.at",
+        "contact:facebook": "CoworkingzuGleisdorf",
+        "contact:mobile": "+43 650 81 78 203; +43 650 34 34 433",
+        "name": "Coworking zu Geidorf"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6878063757,
+      "lat": 41.8971151,
+      "lon": 12.5914555,
+      "tags": {
+        "addr:city": "Roma",
+        "addr:housenumber": "160",
+        "addr:postcode": "00155",
+        "addr:street": "Via di Tor Sapienza",
+        "amenity": "coworking_space",
+        "description": "consorzio associazioni territoriali Coordina 25 associazioni di volontariato del quartiere Tor Sapienza",
+        "name": "Agenzia di quartiere Tor Sapienza",
+        "opening_hours": "Mo-Fr 12:00-13:00, 16:00-18:00",
+        "phone": "3939165941"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7172233252,
+      "lat": 43.7111084,
+      "lon": 10.3990991,
+      "tags": {
+        "addr:city": "Pisa",
+        "addr:housenumber": "22",
+        "addr:street": "Piazza Vittorio Emanuele II",
+        "amenity": "coworking_space",
+        "email": "info@openpi.it",
+        "internet_access": "yes",
+        "name": "OpenPI",
+        "website": "https://www.openpi.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8736723518,
+      "lat": 46.8777116,
+      "lon": 8.6462003,
+      "tags": {
+        "addr:city": "Altdorf UR",
+        "addr:housenumber": "27",
+        "addr:postcode": "6460",
+        "addr:street": "Dätwylerstrasse",
+        "amenity": "coworking_space",
+        "fee": "yes",
+        "name": "Working Point",
+        "website": "https://www.workingpoint.ch/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8743255029,
+      "lat": 47.0363148,
+      "lon": 9.0710806,
+      "tags": {
+        "amenity": "coworking_space",
+        "name": "Raumstation",
+        "website": "https://möbeliareal.ch/raumstation"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8752516740,
+      "lat": 47.0773498,
+      "lon": 15.4311025,
+      "tags": {
+        "access": "customers",
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:floor": "1",
+        "addr:housenumber": "24",
+        "addr:postcode": "8020",
+        "addr:street": "Neubaugasse",
+        "amenity": "coworking_space",
+        "capacity": "30",
+        "entrance": "main",
+        "fee": "yes",
+        "level": "1",
+        "name": "SPACELEND",
+        "opening_hours": "Mo-Fr 09:00-18:00; Sa-Su off",
+        "operator": "cwsg GmbH.",
+        "smoking": "no",
+        "smoking:outside": "yes",
+        "source": "\"Woche\", 24.2.2016",
+        "website": "http://www.spacelend.at#pk_campaign=osm",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9208453817,
+      "lat": 45.4907106,
+      "lon": 9.2048489,
+      "tags": {
+        "addr:housenumber": "38",
+        "addr:street": "Via Copernico",
+        "amenity": "coworking_space",
+        "name": "Copernico Centrale",
+        "phone": "+39800194792"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9775033604,
+      "lat": 41.9108433,
+      "lon": 12.5310709,
+      "tags": {
+        "addr:city": "Roma",
+        "addr:postcode": "00162",
+        "addr:street": "Piazzale della Stazione Tiburtina",
+        "amenity": "coworking_space",
+        "fixme": "Da posizionare!",
+        "name": "Casa delle Tecnologie emergenti (CTE)",
+        "office": "coworking",
+        "start_date": "2022-05-27",
+        "website": "https://cteroma.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11193433048,
+      "lat": 43.5045842,
+      "lon": 16.456085,
+      "tags": {
+        "addr:housenumber": "2",
+        "addr:street": "Spinčićeva",
+        "addr:unit": "b",
+        "amenity": "coworking_space",
+        "email": "info@theworks.rocks",
+        "internet_access": "yes",
+        "internet_access:fee": "customers",
+        "name": "The Works",
+        "office": "coworking",
+        "website": "https://theworks.rocks/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11370361034,
+      "lat": 44.4950791,
+      "lon": 11.3401782,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:postcode": "40121",
+        "addr:street": "Via della Zecca",
+        "amenity": "coworking_space",
+        "facebook": "https://www.facebook.com/spazio01.bologna",
+        "internet_access": "yes",
+        "internet_access:fee": "customers",
+        "level": "1",
+        "name": "Spazio 01",
+        "website": "https://spazio01.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11381346540,
+      "lat": 44.508498,
+      "lon": 11.3468194,
+      "tags": {
+        "amenity": "coworking_space",
+        "name": "SPARK"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12390363640,
+      "lat": 42.3057638,
+      "lon": 9.152699,
+      "tags": {
+        "addr:city": "Corte",
+        "addr:housenumber": "7",
+        "addr:postcode": "20250",
+        "addr:street": "Avenue Xavier Luciani",
+        "amenity": "coworking_space",
+        "name": "Openspaziu",
+        "office": "yes",
+        "phone": "+33 6 35 54 02 40",
+        "ref:FR:SIRET": "35221687303256",
+        "website": "https://www.openspaziu.fr/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12772768632,
+      "lat": 44.3544611,
+      "lon": 11.7125518,
+      "tags": {
+        "amenity": "coworking_space",
+        "check_date": "2025-02-19",
+        "name": "Spazi per l'Italia"
+      }
+    }
+  ]
+}

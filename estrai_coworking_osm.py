@@ -1,46 +1,45 @@
 import requests
-import pandas as pd
+import os
+import json
+import csv
 
-city = input("Inserisci la città (es: Milano): ").strip()
-print(f"Sto cercando spazi coworking nella città: {city}...")
+# Percorso di salvataggio nella cartella app-Nomadi-Digitali
+cartella_destinazione = os.path.expanduser("~/app-Nomadi-Digitali")
+os.makedirs(cartella_destinazione, exist_ok=True)
+percorso_json = os.path.join(cartella_destinazione, "coworking_osm.json")
+percorso_csv = os.path.join(cartella_destinazione, "coworking_osm.csv")
 
-overpass_url = "http://overpass-api.de/api/interpreter"
-overpass_query = f"""
-[out:json];
-area[name="{city}"][admin_level=8];
-(
-  node["amenity"="coworking_space"](area);
-  node["office"="coworking"](area);
-  node["amenity"="community_centre"](area);
-);
-out body;
+# Query: coworking per l'Italia (modifica coordinate per altre zone)
+query = """
+[out:json][timeout:60];
+node["amenity"="coworking_space"](41.5,8.2,47.1,18.1);
+out;
 """
 
-response = requests.get(overpass_url, params={'data': overpass_query})
-print("Status code:", response.status_code)
-print("Response text:", response.text[:400])
+overpass_url = "https://overpass-api.de/api/interpreter"
 
+print("Richiesta a Overpass...")
+response = requests.post(overpass_url, data={'data': query})
+response.raise_for_status()
 data = response.json()
-results = []
-for el in data.get("elements", []):
-    tags = el.get("tags", {})
-    name = tags.get("name", "")
-    wifi = tags.get("internet_access", "") or tags.get("wifi", "")
-    lat = el.get("lat", "")
-    lon = el.get("lon", "")
-    tipo = tags.get("amenity", "") or tags.get("office", "")
-    results.append({
-        "name": name,
-        "lat": lat,
-        "lon": lon,
-        "type": tipo,
-        "wifi": wifi
-    })
+print(f"Trovati {len(data['elements'])} coworking.")
 
-df = pd.DataFrame(results)
-print("Risultato estratto:")
-print(df.head())
+# Salva il JSON
+with open(percorso_json, "w", encoding="utf-8") as f_json:
+    json.dump(data, f_json, ensure_ascii=False, indent=2)
+print(f"Salvato {percorso_json}")
 
-csv_path = f"coworking_{city.lower()}.csv"
-df.to_csv(csv_path, index=False)
-print(f"Risultati salvati in {csv_path}")
+# Salva il CSV
+with open(percorso_csv, "w", encoding="utf-8", newline="") as csvfile:
+    fieldnames = ["id", "lat", "lon", "name"]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    for element in data["elements"]:
+        name = element.get("tags", {}).get("name", "")
+        writer.writerow({
+            "id": element["id"],
+            "lat": element["lat"],
+            "lon": element["lon"],
+            "name": name
+        })
+print(f"Creato {percorso_csv}")
