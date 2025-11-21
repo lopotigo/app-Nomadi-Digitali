@@ -2,7 +2,7 @@
   "version": 0.6,
   "generator": "Overpass API 0.7.62.8 e802775f",
   "osm3s": {
-    "timestamp_osm_base": "2025-11-07T07:49:36Z",
+    "timestamp_osm_base": "2025-11-13T09:17:51Z",
     "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
   },
   "elements": [
@@ -618,7 +618,7 @@
         "description": "consorzio associazioni territoriali Coordina 25 associazioni di volontariato del quartiere Tor Sapienza",
         "name": "Agenzia di quartiere Tor Sapienza",
         "opening_hours": "Mo-Fr 12:00-13:00, 16:00-18:00",
-        "phone": "3939165941"
+        "phone": "+39 393 916 5941"
       }
     },
     {

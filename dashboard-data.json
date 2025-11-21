@@ -1,0 +1,51 @@
+{
+  "kpi": [ ],
+  "badge": [ ],
+  "feed": [ ],
+  "events": [ ],
+  "hotspot": [ ],
+  "coworkings": [
+    {
+      "name": "MilanoCowo",
+      "city": "Milano",
+      "address": "Via Adige 5, Milano",
+      "lat": 45.4642,
+      "lng": 9.19,
+      "wifi_quality": "Ottimo",
+      "services": ["Caffè", "Stampante", "Sala riunioni"],
+      "price": 20
+    },
+    {
+      "name": "Barcelona Hub",
+      "city": "Barcellona",
+      "address": "Carrer de la Marina, Barcelona",
+      "lat": 41.3851,
+      "lng": 2.1734,
+      "wifi_quality": "Buono",
+      "services": ["Wi-Fi", "Reception"],
+      "price": 18
+    },
+    {
+      "name": "Porto Space",
+      "city": "Porto",
+      "address": "Rua das Flores 67, Porto",
+      "lat": 41.1579,
+      "lng": -8.6291,
+      "wifi_quality": "Ottimo",
+      "services": ["Spazio relax", "Aree meeting"],
+      "price": 15
+    },
+    {
+      "name": "Regus - Malacca",
+      "city": "Malacca",
+      "address": "Regus, Jalan Merdeka, Malacca",
+      "lat": 2.1962,
+      "lng": 102.2464,
+      "wifi_quality": "Molto buono (120mbps, fibra)",
+      "services": ["Reception", "Postazione dedicata", "Bar interno"],
+      "price": 55
+    }
+    
+    
+  ]
+}

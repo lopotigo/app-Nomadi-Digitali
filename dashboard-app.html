@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Nomadi Digitali - Demo Social Mappa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: "Baloo 2", "Comic Sans MS", Arial, sans-serif; background: #f8f9fa;}
+        #app { display: flex; min-height: 100vh; }
+        #map { flex: 2; height: 100vh; min-width: 60vw; }
+
+        #sidebar {
+            flex: 1;
+            padding: 32px 16px 0 16px;
+            background: #27406c;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #sidebar h3 { font-size: 1.5em; margin-bottom: 18px; font-family: "Baloo 2", cursive;}
+        #sidebar .info { margin-bottom: 30px; font-size: 1.09em; }
+        #chat-box {
+            background: #193055;
+            border-radius: 14px;
+            padding: 15px;
+            height: 340px;
+            margin-bottom: 12px;
+            overflow-y: auto;
+            font-size: 1em;
+        }
+        #chat-input-area { display: flex; }
+        #chat-input {
+            flex: 1;
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 5px 0 0 5px;
+            border: none;
+            margin-right: 3px;
+        }
+        #chat-send {
+            padding: 0 19px;
+            background: #26c281;
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: "Baloo 2", cursive;
+        }
+
+        /* POPUP NUVOLOSO/CARTOON */
+        .leaflet-popup-content-wrapper {
+            background: linear-gradient(135deg, #fff7b3 88%, #ffe5fa 100%);
+            box-shadow: 0 8px 20px 4px #fdd8ff99, 0 1px 0 #e1e0ea;
+            border-radius: 34px 40px 34px 40px;
+            border: 3px solid #fdc4ff;
+            font-family: "Baloo 2", "Comic Sans MS", cursive, sans-serif;
+            color: #4c2289;
+            padding: 10px 10px 4px 10px !important;
+            margin-bottom: 0;
+            position: relative;
+        }
+        .leaflet-popup-tip {
+            background: #fff7b3;
+            box-shadow: 0 0 14px #fbe7ff;
+            border: 3px solid #fdc4ff;
+            border-top-left-radius: 50%;
+            border-bottom-right-radius: 65%;
+        }
+        /* Interni popup */
+        .cowork-popup {
+            min-width: 320px;
+            max-width: 340px;
+            font-size: 1.15em;
+            line-height: 1.13em;
+            font-family: "Baloo 2", "Comic Sans MS", cursive, sans-serif;
+        }
+        .cowork-popup-title {
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            background: linear-gradient(85deg,#5dd8ff 55%,#fff7b3 140%);
+            color: #4c2289;
+            border-radius:16px;
+            padding: 3px 7px;
+            box-shadow: 0 2px 14px #8ee1ff22;
+        }
+        .cowork-img {
+            width: 100%; border-radius: 22px; margin-bottom: 8px; height: 74px; object-fit: cover; border: 2px solid #5dd8ff;
+        }
+        .cowork-row { margin-bottom: 5px; }
+        .cowork-label { color: #ec44cc; font-weight: 600; margin-right:3px;}
+        .cowork-stars { color: #f9c846; font-size: 1.25em; margin-right: 9px;}
+        .cowork-event { font-size: 0.97em; color: #26c281; margin-bottom: 5px; font-family:"Baloo 2", cursive;}
+        .cowork-nomadi { font-size: 0.97em; color: #607cd8; margin-bottom: 7px; font-weight:600;}
+        .cowork-popup-btn {
+            display: inline-block;
+            background: linear-gradient(93deg,#5dd8ff 15%,#ec44cc 240%);
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 8px 26px;
+            font-weight: bold;
+            font-size: 1em;
+            margin-top: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 13px #f5e9ff88;
+            transition: background 0.15s;
+            font-family:"Baloo 2", cursive;
+        }
+        .cowork-popup-btn:hover { background: linear-gradient(90deg,#ec44cc 15%,#5dd8ff 180%);}
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="map"></div>
+        <div id="sidebar">
+            <div>
+                <h3>Chat Globale Nomadi Digitali</h3>
+                <div class="info">Clicca un marker sulla mappa: info pratiche subito visibili! Puoi entrare nella chat locale.</div>
+                <div id="chat-box"></div>
+            </div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Scrivi un messaggio..."/>
+                <button id="chat-send">Invia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+    // MARKER SOCIAL DEMO
+    // Milano (partenza)
+    const milano = {
+        name: "Milano",
+        image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+        lat: 45.4642, lng: 9.19,
+        cowork: "WeWork Milano",
+        wifi: 5,
+        prezzo: "20€/giorno",
+        cibo: "Bar Politecnico",
+        evento: "Workshop martedì",
+        nomadi: 25
+    };
+    // Gli altri marker
+    const points = [
+        {
+            name: "Talent Garden Milano",
+            image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+            lat: 45.4889, lng: 9.2258,
+            cowork: "Talent Garden Milano",
+            wifi: 5,
+            prezzo: "18€/giorno",
+            cibo: "Piadineria Tag",
+            evento: "Aperitivo giovedì",
+            nomadi: 17
+        },
+        {
+            name: "Ostello Bello",
+            image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+            lat: 45.4621, lng: 9.1859,
+            cowork: "Ostello Bello",
+            wifi: 4,
+            prezzo: "15€/notte",
+            cibo: "Bistrot",
+            evento: "Live Music Venerdì",
+            nomadi: 9
+        },
+        {
+            name: "Base Milano",
+            image: "https://images.unsplash.com/photo-1482062364825-616fd23b8fc1?auto=format&fit=crop&w=400&q=80",
+            lat: 45.4510, lng: 9.1677,
+            cowork: "Base Milano",
+            wifi: 5,
+            prezzo: "Free entry",
+            cibo: "Caffè Letterario",
+            evento: "Workshop domenica",
+            nomadi: 12
+        },
+        {
+            name: "Coworking Example",
+            image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+            lat: 45.4650, lng: 9.2100,
+            cowork: "Coworking Example",
+            wifi: 4,
+            prezzo: "16€/giorno",
+            cibo: "Pizza al taglio",
+            evento: "Meetup sabato",
+            nomadi: 7
+        }
+    ];
+
+    // --- MAPPA ---
+    var map = L.map('map').setView([45.4642, 9.19], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Milano marker
+    let stars = '';
+    for(let i=0; i<milano.wifi; i++) stars += '★';
+    let popupHTML = `
+    <div class="cowork-popup">
+        <img class="cowork-img" src="${milano.image}" alt="${milano.name}">
+        <div class="cowork-popup-title">${milano.name}</div>
+        <div class="cowork-row"><span class="cowork-label">Coworking:</span> ${milano.cowork}</div>
+        <div class="cowork-row"><span class="cowork-label">WiFi:</span> <span class="cowork-stars">${stars}</span></div>
+        <div class="cowork-row"><span class="cowork-label">Prezzo:</span> ${milano.prezzo}</div>
+        <div class="cowork-row"><span class="cowork-label">Cibo cheap:</span> ${milano.cibo}</div>
+        <div class="cowork-row cowork-event"><span class="cowork-label">Evento:</span> ${milano.evento}</div>
+        <div class="cowork-row cowork-nomadi">Nomadi attivi: ${milano.nomadi} online ora</div>
+        <button class="cowork-popup-btn" onclick="joinLocalChat('${milano.name}')">Entra nella chat</button>
+    </div>
+    `;
+    const milanoMarker = L.marker([milano.lat, milano.lng]).addTo(map);
+    milanoMarker.bindPopup(popupHTML, {maxWidth: 365}).openPopup();
+
+    // Altri marker
+    points.forEach(p => {
+        let stars = '';
+        for(let i=0; i<p.wifi; i++) stars += '★';
+        let popupHTML = `
+        <div class="cowork-popup">
+            <img class="cowork-img" src="${p.image}" alt="${p.name}">
+            <div class="cowork-popup-title">${p.name}</div>
+            <div class="cowork-row"><span class="cowork-label">Coworking:</span> ${p.cowork}</div>
+            <div class="cowork-row"><span class="cowork-label">WiFi:</span> <span class="cowork-stars">${stars}</span></div>
+            <div class="cowork-row"><span class="cowork-label">Prezzo:</span> ${p.prezzo}</div>
+            <div class="cowork-row"><span class="cowork-label">Cibo cheap:</span> ${p.cibo}</div>
+            <div class="cowork-row cowork-event"><span class="cowork-label">Evento:</span> ${p.evento}</div>
+            <div class="cowork-row cowork-nomadi">Nomadi attivi: ${p.nomadi} online ora</div>
+            <button class="cowork-popup-btn" onclick="joinLocalChat('${p.name}')">Entra nella chat</button>
+        </div>
+        `;
+        const marker = L.marker([p.lat, p.lng]).addTo(map);
+        marker.bindPopup(popupHTML, {maxWidth: 365});
+    });
+
+    // POLILINEA PERCORSO STATICO: Milano -> ogni punto, tratta con linee colorate
+    points.forEach(p => {
+        L.polyline([
+            [milano.lat, milano.lng],
+            [p.lat, p.lng]
+        ], {
+            color: '#ec44cc',
+            weight: 3,
+            opacity: 0.9,
+            dashArray: '8, 6',
+            lineJoin: 'round'
+        }).addTo(map);
+    });
+
+    // --- CHAT LOCALE DEMO ---
+    const chatBox = document.getElementById('chat-box');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    function addMessage(msg, user = "Tu") {
+        const time = new Date().toLocaleTimeString().slice(0,5);
+        chatBox.innerHTML += `<div style="margin-bottom:7px"><strong>${user}:</strong> ${msg} <span style="color:#ffe5fa;font-size:0.82em">${time}</span></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    chatSend.addEventListener('click', function(){
+        const msg = chatInput.value.trim();
+        if(msg.length > 0) {
+            addMessage(msg, "Tu");
+            chatInput.value = '';
+        }
+    });
+    chatInput.addEventListener('keydown', function(e){
+        if(e.key === 'Enter') chatSend.click();
+    });
+    // Benvenuto
+    addMessage("Benvenuto nella Chat Globale dei Nomadi Digitali! Clicca un marker sulla mappa per ulteriori info.", "Sistema");
+    window.joinLocalChat = function(city){
+        addMessage(`[Entra in chat locale a ${city}]`, "Sistema");
+    };
+    </script>
+</body>
+</html>

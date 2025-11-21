@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Nomadi Digitali - Demo Intro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS per la mappa interattiva -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    :root {
+      --main-gradient: linear-gradient(90deg, #5b8def 0%, #3ee9ff 100%);
+      --card-bg: #fff;
+      --card-shadow: 0 12px 38px -14px #7aa5df;
+      --header-height: 90px;
+      --avatar-shadow: 0 2px 10px -6px #4570b7;
+      --cta-bg: #2563eb;
+      --cta-bg-hover: #3ee9ff;
+    }
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: #f6fbff;
+      color: #232938;
+      margin: 0;
+      min-height: 100vh;
+    }
+    header {
+      height: var(--header-height); width: 100vw;
+      background: var(--main-gradient);
+      color: #fff;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0 16px -7px #a5cfff;
+      position: relative;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 16px;
+      margin-left: 36px; font-weight: 600; font-size: 1.4rem;
+      letter-spacing: 0.5px;
+    }
+    .logo-icon {
+      width: 38px; height: 38px; background: #fff; border-radius: 50%;
+      border: 2.5px solid #3ee9ff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--avatar-shadow);
+      font-size: 1.6rem; color: #2563eb;
+    }
+    .header-right {
+      margin-right: 36px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .social-icon {
+      color: #fff;
+      font-size: 2rem;
+      display: inline-block;
+      filter: drop-shadow(0 2px 6px #0002);
+    }
+    main {
+      margin: 0 auto;
+      max-width: 1220px;
+      padding: 36px 14px 22px 14px;
+      display: flex; flex-wrap: wrap; gap: 2.5rem;
+      justify-content: flex-start;
+      align-items: flex-start;
+      position: relative;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+      padding: 2.2rem 2rem 1.6rem 2rem;
+      margin-bottom: 22px;
+      min-width: 300px;
+      flex: 1 1 340px;
+      max-width: 44%;
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      box-shadow: 0 18px 40px -13px #408adf;
+      transform: translateY(-4px) scale(1.027);
+    }
+    .kpi .numbers {
+      display: flex; flex-wrap: wrap; gap: 1.2rem; margin-bottom: 10px;
+    }
+    .num-card {
+      background: linear-gradient(98deg, #e9f3ff 0%, #c1e6fa 100%);
+      border-radius: 12px;
+      padding: 1.2rem 1rem 0.9rem 1rem;
+      min-width: 110px; max-width: 120px;
+      text-align: center;
+      box-shadow: 0 2px 8px -5px #b7c3da;
+      margin-bottom: 7px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .num-card label {
+      color: #5e7bb3;
+      font-size: 0.93rem; font-weight: 500;
+    }
+    .num-card span {
+      font-size: 2.05rem;
+      color: #2563eb;
+      margin-top: 0.3rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      filter: drop-shadow(0 2px 7px #80e9ff50);
+    }
+    h2 {
+      font-size: 1.25rem;
+      color: #233466;
+      margin-bottom: 1.1rem;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .feed {
+      margin-top: 1.2rem;
+      font-size: 1.01rem;
+    }
+    .feed ul { padding-left: 1.4rem; margin: 0; }
+    .feed li { margin-bottom: 7px; }
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: linear-gradient(89deg,#2563eb 60%,#3ee9ff 100%);
+      color: #fff;
+      font-size: 0.97rem;
+      font-weight: 600;
+      border-radius: 13px;
+      margin-right: 1rem;
+      margin-bottom: 0.7rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 14px -6px #90e4fc;
+      border: 1.3px solid #2eb6dd31;
+    }
+    .events .event-list { margin-top: 1rem; padding-left: 0.9rem; }
+    .events .event-list li { margin-bottom: 10px; font-size: 1.05rem; }
+    .map {
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 1rem;
+    }
+    #leaflet-map {
+      width: 98%;
+      height: 250px;
+      border-radius: 16px;
+      margin: 0 auto;
+      box-shadow: 0 5px 13px -7px #b5cfff;
+    }
+    .map .hotspot {
+      position: absolute;
+      top: 22px; right: 28px;
+      background: #f9fcffcc;
+      border-radius: 10px;
+      padding: 8px 17px;
+      font-size: 1rem;
+      color: #233466;
+      box-shadow: 0 1px 9px -6px #b4b4b4;
+      backdrop-filter: blur(2px);
+      font-weight: 500;
+      z-index: 2;
+    }
+    .map .cta-btn {
+      display: block;
+      margin: 18px auto 0 auto;
+      padding: 11px 24px;
+      background: var(--cta-bg);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.07rem;
+      border: none;
+      border-radius: 9px;
+      letter-spacing: 0.6px;
+      transition: background 0.23s, box-shadow 0.23s;
+      cursor: pointer;
+      box-shadow: 0 2px 13px -8px #2563eb90;
+    }
+    .map .cta-btn:hover {
+      background: var(--cta-bg-hover);
+      color: #233466;
+      box-shadow: 0 8px 20px -12px #3ee9ff99;
+    }
+    @media (max-width: 900px) {
+      main { flex-direction: column; padding: 20px 7px; }
+      .card { max-width: 97%; margin-bottom: 21px; }
+    }
+    @media (max-width: 600px) {
+      .logo { margin-left: 7px; font-size: 1.08rem; }
+      header { height: 70px; }
+      .header-right { margin-right: 7px; }
+      main { gap: 1.3rem; padding: 9px 2px; }
+      .card { padding: 1.2rem 0.6rem 1rem 0.6rem; font-size: 0.96rem; }
+      h2 { font-size: 1.1rem; }
+      .num-card span { font-size: 1.28rem; }
+      .badge { font-size: 0.9rem; padding: 5px 10px;}
+      #leaflet-map { height: 170px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">
+      <span class="logo-icon">🌍</span>
+      Nomadi Digitali
+    </span>
+    <span class="header-right">
+      <span class="social-icon">👥</span>
+      <span style="font-weight:600;">La community smart, ovunque!</span>
+    </span>
+  </header>
+  <main>
+    <section class="card kpi">
+      <h2>KPI Community</h2>
+      <div class="numbers" id="kpi-numbers"></div>
+    </section>
+    <section class="card activity">
+      <h2>Social Feed & Badge</h2>
+      <div id="badge-list"></div>
+      <div class="feed" id="feed-list"></div>
+    </section>
+    <section class="card events">
+      <h2>Eventi In Evidenza</h2>
+      <ul class="event-list" id="event-list"></ul>
+    </section>
+    <section class="card map">
+      <h2>Heatmap Community</h2>
+      <div id="leaflet-map"></div>
+      <div class="hotspot"><strong>Hotspot:</strong> Milano, Barcellona, Berlino, Roma, Lisbona</div>
+      <button class="cta-btn">Scopri la Community</button>
+    </section>
+  </main>
+  <script>
+  fetch('dashboard-data.json')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('kpi-numbers').innerHTML = data.kpi.map(k =>
+        `<div class="num-card">
+          <label>${k.label}</label>
+          <span>${k.value}</span>
+        </div>`).join('');
+      document.getElementById('badge-list').innerHTML = data.badge.map(b =>
+        `<span class="badge">${b}</span>`).join('');
+      document.getElementById('feed-list').innerHTML =
+        `<strong>Ultimi post:</strong><ul>` +
+        data.feed.map(f => `<li><em>${f.user}</em> ${f.text}</li>`).join('') +
+        `</ul>`;
+      document.getElementById('event-list').innerHTML =
+        data.events.map(ev => `<li>${ev.title} – <b>${ev.date}</b></li>`).join('');
+      // Se vuoi popolare l'hotspot da JSON, puoi farlo qui
+      // document.querySelector('.hotspot').innerHTML =
+      //   `<strong>Hotspot:</strong> ` + data.hotspot.join(', ');
+    });
+
+  // Script mappa Leaflet
+  </script>
+  <!-- Carica Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('leaflet-map').setView([46.2, 11.0], 4.5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 12,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var hotspot = [
+      {city: "Milano", coord: [45.4642, 9.19]},
+      {city: "Barcellona", coord: [41.3851, 2.1734]},
+      {city: "Berlino", coord: [52.52, 13.405]},
+      {city: "Roma", coord: [41.9028, 12.4964]},
+      {city: "Lisbona", coord: [38.7223, -9.1393]}
+    ];
+    hotspot.forEach(h => {
+      L.marker(h.coord).addTo(map)
+        .bindPopup(`<b>${h.city}</b>`);
+    });
+  </script>
+</body>
+</html>

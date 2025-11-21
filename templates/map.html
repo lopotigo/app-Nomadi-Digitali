@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mappa Nomadi Digitali</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 90vh; margin-bottom: 10px; border-radius: 16px; box-shadow: 0 4px 24px #0002; }
+    #distanceBox {
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 1.2em;
+      color: #1976d2;
+      font-weight: bold;
+      box-shadow: 0 2px 8px #0002;
+      width: fit-content;
+      margin: 0 auto 18px auto;
+      border: 1.5px solid #1976d2;
+    }
+    .percorso-point {
+      background: #fff;
+      border: 3px solid #e53935;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      display: block;
+      box-shadow: 0 2px 8px #0003;
+    }
+    .leaflet-popup-content input, .leaflet-popup-content textarea {
+      display: block; width: 95%; margin-bottom: 10px;
+    }
+    .leaflet-popup-content button {
+      background: #379a7c; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="distanceBox">Distanza totale percorso: 0 km</div>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // --- Inizio: variabili passate dal server Flask ---
+    var coworkings = {{ coworkings | tojson }};
+    var map = L.map('map').setView([{{ center_lat }}, {{ center_lon }}], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // --- marker dal CSV/coworkings ---
+    coworkings.forEach(function(cw) {
+      L.marker([cw.lat, cw.lon]).addTo(map)
+        .bindPopup('<b>' + cw.name + '</b><br>' + cw.address);
+    });
+
+    // Funzione per aggiungere marker personalizzati
+    map.on('click', function(e) {
+      var latlng = e.latlng;
+      var formHtml = `
+        <b>Aggiungi un luogo</b><br>
+        <input type="text" id="markerTitle" placeholder="Nome luogo"/><br>
+        <textarea id="markerDesc" placeholder="Descrizione"></textarea><br>
+        <button onclick="window.addMarker(${latlng.lat},${latlng.lng})">Aggiungi!</button>
+      `;
+      var popup = L.popup()
+        .setLatLng(latlng)
+        .setContent(formHtml)
+        .openOn(map);
+
+      window.addMarker = function(lat, lng) {
+        var title = document.getElementById('markerTitle').value || 'Senza nome';
+        var desc = document.getElementById('markerDesc').value || '';
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup('<b>' + title + '</b><br>' + desc)
+          .openPopup();
+        map.closePopup();
+        delete window.addMarker;
+      };
+    });
+
+    // Percorso: selezione, visualizzazione e calcolo distanza
+    var percorsoPunti = [];
+    var percorsoLine;
+    var percorsoMarkers = [];
+
+    function resetPercorso() {
+      percorsoPunti = [];
+      if (percorsoLine) {
+        map.removeLayer(percorsoLine);
+        percorsoLine = null;
+      }
+      percorsoMarkers.forEach(m => map.removeLayer(m));
+      percorsoMarkers = [];
+      aggiornaDistanza();
+      alert('Percorso resettato! Doppio clic sui punti da collegare.');
+    }
+
+    // Pulsante per resettare il percorso (in alto a destra)
+    var resetBtn = L.control({position: 'topright'});
+    resetBtn.onAdd = function(map) {
+      var div = L.DomUtil.create('div', 'leaflet-bar');
+      div.innerHTML = '<button style="padding:6px 16px; font-size:1em; background:#e53935; color:#fff; border-radius:8px;">Reset percorso</button>';
+      div.onclick = resetPercorso;
+      return div;
+    };
+    resetBtn.addTo(map);
+
+    // Doppio click per aggiungere punti al percorso
+    map.on('dblclick', function(e) {
+      var point = [e.latlng.lat, e.latlng.lng];
+      percorsoPunti.push(point);
+
+      var marker = L.marker(point, {
+        icon: L.divIcon({
+          className: 'percorso-point',
+          iconSize: [18, 18]
+        })
+      }).addTo(map);
+      percorsoMarkers.push(marker);
+
+      if (percorsoLine) {
+        map.removeLayer(percorsoLine);
+      }
+      if (percorsoPunti.length > 1) {
+        percorsoLine = L.polyline(percorsoPunti, {color: '#1976d2', weight: 5, dashArray: '8 8', opacity:0.85}).addTo(map);
+      }
+      aggiornaDistanza();
+    });
+
+    // Funzione per calcolare distanza tra due coordinate geografiche (Haversine)
+    function distanzaKM(a, b) {
+      var R = 6371;
+      var dLat = (b[0] - a[0]) * Math.PI/180;
+      var dLng = (b[1] - a[1]) * Math.PI/180;
+      var lat1 = a[0] * Math.PI/180;
+      var lat2 = b[0] * Math.PI/180;
+      var x = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
+      var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+      return R * y;
+    }
+
+    // Calcola distanza totale e aggiorna box
+    function aggiornaDistanza() {
+      var distanza = 0;
+      for (var i=1; i<percorsoPunti.length; i++) {
+        distanza += distanzaKM(percorsoPunti[i-1], percorsoPunti[i]);
+      }
+      document.getElementById('distanceBox').innerText = 'Distanza totale percorso: ' + distanza.toFixed(2) + ' km';
+    }
+
+    L.control
+      .attribution({position: 'bottomleft'})
+      .addAttribution('Doppio clic sulla mappa per aggiungere punti e creare un percorso. Usa il pulsante in alto a destra per resettare.');
+
+  </script>
+</body>

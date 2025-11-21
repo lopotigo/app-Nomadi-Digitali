@@ -1,0 +1,26 @@
+{
+  "name": "app-nomadi-digitali",
+  "version": "1.0.0",
+  "description": "pico PROGRESSO_2025-10-17.md pico map.html",
+  "main": "loadCoworking.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lopotigo/app-Nomadi-Digitali.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lopotigo/app-Nomadi-Digitali/issues"
+  },
+  "homepage": "https://github.com/lopotigo/app-Nomadi-Digitali#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-fetch": "^2.7.0"
+  }
+}

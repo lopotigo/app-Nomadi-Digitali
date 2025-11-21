@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Social Nomadi Digitali - Demo Completa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Baloo 2', Arial, sans-serif; background: #f8f9fa;}
+        #container { display: flex; height: 100vh; }
+        #map { flex: 2; height: 100vh; min-width: 60vw; position: relative;}
+        #sidebar {
+            flex: 1;
+            padding: 32px 18px 0 18px;
+            background: #27406c;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #sidebar h3 { font-size: 1.45em; margin-bottom: 15px; font-family: 'Baloo 2', cursive;}
+        #sidebar .info { margin-bottom: 16px; font-size: 1.03em; }
+        #chat-users { margin-bottom: 13px;}
+        #chat-users span {
+            background: #5dd8ff;
+            color: #27406c;
+            border-radius: 12px;
+            padding: 5px 10px;
+            margin-right: 7px;
+            font-weight: bold;
+            font-family: 'Baloo 2', cursive;
+            display: inline-block;
+        }
+        #shared-list {
+            margin-bottom: 18px; 
+        }
+        .shared-row { padding:6px 0; border-bottom:1px solid #5dd8ff1b;}
+        .shared-user { color:#ec44cc; font-weight:700; }
+        .shared-what { color: #193055; font-weight:600;}
+        #share-box { 
+            background: #ec44cc33; 
+            border-radius: 15px; 
+            padding: 9px 15px; 
+            margin-bottom: 8px; 
+            font-size: 1em;
+            box-shadow: 0 4px 16px #e1e0ea44;
+        }
+        #chat-box {
+            background: #193055;
+            border-radius: 14px;
+            padding: 15px;
+            height: 220px;
+            margin-bottom: 12px;
+            overflow-y: auto;
+            font-size: 1em;
+        }
+        #chat-input-area { display: flex; }
+        #chat-input {
+            flex: 1;
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 5px 0 0 5px;
+            border: none;
+            margin-right: 3px;
+        }
+        #chat-send {
+            padding: 0 19px;
+            background: #26c281;
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Baloo 2', cursive;
+        }
+        #search-area {
+            position: absolute;
+            top: 24px;
+            left: 30px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 18px #6665cf1d;
+            display: flex;
+            align-items: center;
+            padding: 10px 16px 10px 14px;
+            z-index: 1002;
+            font-family: 'Baloo 2', Arial, sans-serif;
+        }
+        #search-area label { margin-right: 7px; font-weight: bold; color:#6e30c6;}
+        #search-area input {
+            font-size: 1.05em;
+            border: 1px solid #ebebeb;
+            border-radius: 12px;
+            padding: 6px 9px;
+            background: #f9f9fd;
+            margin-right: 10px;
+            width: 190px;
+            min-width:30px;
+        }
+        #search-area button {
+            background: linear-gradient(93deg,#5dd8ff 15%,#ec44cc 240%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 7px 22px;
+            font-weight: bold;
+            font-size: 1em;
+            font-family:"Baloo 2", cursive;
+            cursor: pointer;
+        }
+        .leaflet-popup-content-wrapper {
+            background: linear-gradient(135deg, #fff7b3 88%, #ffe5fa 100%);
+            box-shadow: 0 8px 20px 4px #fdd8ff99, 0 1px 0 #e1e0ea;
+            border-radius: 34px 40px 34px 40px;
+            border: 3px solid #fdc4ff;
+            font-family: 'Baloo 2', "Comic Sans MS", cursive, sans-serif;
+            color: #4c2289;
+        }
+        .leaflet-popup-tip {
+            background: #fff7b3;
+            box-shadow: 0 0 14px #fbe7ff;
+            border: 3px solid #fdc4ff;
+            border-top-left-radius: 50%;
+            border-bottom-right-radius: 65%;
+        }
+        .cowork-popup {
+            min-width: 260px;
+            max-width: 340px;
+            font-size: 1.08em;
+            font-family: 'Baloo 2', "Comic Sans MS", cursive, sans-serif;
+        }
+        .cowork-popup-title {
+            font-weight: bold;
+            font-size: 1.25em;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg,#5dd8ff 55%,#fff7b3 120%);
+            color: #4c2289;
+            border-radius:16px;
+            padding: 2px 7px;
+        }
+        .cowork-img {
+            width: 100%; border-radius: 18px; margin-bottom: 7px; height: 58px; object-fit: cover; border: 2px solid #5dd8ff;
+        }
+        .cowork-row { margin-bottom: 4px; }
+        .cowork-label { color: #ec44cc; font-weight: 600; margin-right:3px;}
+        .cowork-stars { color: #f9c846; font-size: 1.1em; margin-right: 9px;}
+        .cowork-event { font-size: 0.96em; color: #26c281;}
+        .cowork-nomadi { font-size: 0.96em; color: #607cd8; margin-bottom: 5px; }
+        .cowork-popup-share {
+            display:block;
+            margin-top:8px;
+            font-weight:600;
+            color:#ec44cc;
+        }
+        .cowork-popup-btn {
+            display: inline-block;
+            background: linear-gradient(93deg,#5dd8ff 15%,#ec44cc 240%);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-weight: bold;
+            font-size: 0.97em;
+            margin-top: 3px;
+            cursor: pointer;
+            font-family:"Baloo 2", cursive;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="map">
+        <div id="search-area">
+            <label for="routeInput">Percorso:</label>
+            <input type="text" id="routeInput" placeholder="Milano, Firenze, Napoli">
+            <button id="routeSearchBtn">Cerca percorso</button>
+        </div>
+    </div>
+    <div id="sidebar">
+        <div>
+            <h3>Chat Globale Nomadi Digitali</h3>
+            <div class="info">Clicca sui marker per condividere info sulla mappa, crea il tuo percorso, chatta!</div>
+            <div id="chat-users">
+                <span>Luca</span>
+                <span>Matteo</span>
+                <span>Alice</span>
+                <span>Laura</span>
+            </div>
+            <div id="shared-list"></div>
+            <div id="chat-box"></div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Scrivi un messaggio..."/>
+            <button id="chat-send">Invia</button>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+const USERS = ["Luca","Matteo","Alice","Laura"];
+const markerData = [
+    {
+        name: "Milano",
+        image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+        lat: 45.4642, lng: 9.19,
+        cowork: "WeWork Milano",
+        wifi: 5,
+        prezzo: "20€/giorno",
+        cibo: "Bar Politecnico",
+        evento: "Workshop martedì",
+        nomadi: 25
+    },
+    {
+        name: "Firenze",
+        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+        lat: 43.7696, lng: 11.2558,
+        cowork: "Impact Hub Firenze",
+        wifi: 4,
+        prezzo: "15€/giorno",
+        cibo: "Trattoria Da Mario",
+        evento: "Aperitivo coworking giovedì",
+        nomadi: 11
+    },
+    {
+        name: "Roma",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        lat: 41.9028, lng: 12.4964,
+        cowork: "Talent Garden Roma",
+        wifi: 5,
+        prezzo: "18€/giorno",
+        cibo: "Piadineria Re di Roma",
+        evento: "Meetup Nomadi Martedì",
+        nomadi: 17
+    },
+    {
+        name: "Napoli",
+        image: "https://images.unsplash.com/photo-1482062364825-616fd23b8fc1?auto=format&fit=crop&w=400&q=80",
+        lat: 40.8518, lng: 14.2681,
+        cowork: "Coworking Napoli",
+        wifi: 4,
+        prezzo: "16€/giorno",
+        cibo: "Trattoria Nennella",
+        evento: "Networking Venerdì",
+        nomadi: 12
+    }
+];
+// Mappa
+var map = L.map('map').setView([42.5, 12.2], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 16,
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+let polylineObj = null;
+function drawRoute(latlngs) {
+    if (polylineObj) map.removeLayer(polylineObj);
+    polylineObj = L.polyline(latlngs, {
+        color: '#ec44cc',
+        weight: 4,
+        opacity: 0.9,
+        dashArray: '12, 8',
+        lineJoin: 'round'
+    }).addTo(map);
+    if(latlngs && latlngs.length>1){
+        map.fitBounds(polylineObj.getBounds());
+    }
+}
+drawRoute(markerData.map(p=>[p.lat,p.lng]));
+
+// --- Funzione input percorso multiplo ---
+document.getElementById('routeSearchBtn').onclick = function() {
+    const val = document.getElementById('routeInput').value.trim();
+    if (!val) return;
+    let cities = val.split(',').map(s => s.trim()).filter(Boolean);
+    if (cities.length < 2) { alert("Inserisci almeno due città!"); return; }
+    let points = [];
+    for (const city of cities) {
+        let item = markerData.find(p => p.name.toLowerCase() === city.toLowerCase());
+        if (!item) {
+            alert(`Città "${city}" non trovata. Usa: Milano, Firenze, Roma, Napoli.`);
+            return;
+        }
+        points.push([item.lat, item.lng]);
+    }
+    drawRoute(points);
+};
+
+// --- SHARING ---
+let sharedItems = [];
+function updateSharedList(){
+    const sharedList = document.getElementById('shared-list');
+    if(sharedItems.length === 0) {
+        sharedList.innerHTML = `<div id="share-box"><em>Nessuna condivisione attiva!</em></div>`;
+    } else {
+        sharedList.innerHTML = '<div><strong>🗂 Risorse Condivise:</strong></div>' + sharedItems.map(item => `
+            <div class="shared-row"><span class="shared-user">${item.user}</span> ha condiviso <span class="shared-what">${item.what}</span> su <strong>${item.city}</strong></div>
+        `).join('');
+    }
+}
+
+// Marker & popup cartoon + tasto condividi con utente scelto
+markerData.forEach((p, idx) => {
+    let stars = '★'.repeat(p.wifi);
+    let shareButtons = USERS.map(u =>
+        `<button class="cowork-popup-btn" onclick="shareCity('${p.name}', '${u}')">Condividi come ${u}</button>`
+    ).join("");
+    let popupHTML = `
+    <div class="cowork-popup">
+        <img class="cowork-img" src="${p.image}" alt="${p.name}">
+        <div class="cowork-popup-title">${p.name}</div>
+        <div class="cowork-row"><span class="cowork-label">Cowork:</span> ${p.cowork}</div>
+        <div class="cowork-row"><span class="cowork-label">WiFi:</span> <span class="cowork-stars">${stars}</span></div>
+        <div class="cowork-row"><span class="cowork-label">Prezzo:</span> ${p.prezzo}</div>
+        <div class="cowork-row"><span class="cowork-label">Cibo cheap:</span> ${p.cibo}</div>
+        <div class="cowork-row cowork-event"><span class="cowork-label">Evento:</span> ${p.evento}</div>
+        <div class="cowork-row cowork-nomadi">Nomadi attivi: ${p.nomadi} online ora</div>
+        <span class="cowork-popup-share">Condividi questo luogo:</span>
+        ${shareButtons}
+        <br>
+        <button class="cowork-popup-btn" onclick="joinLocalChat('${p.name}')">Chat locale</button>
+    </div>`;
+    let marker = L.marker([p.lat, p.lng]).addTo(map);
+    marker.bindPopup(popupHTML, {maxWidth: 340});
+    if (idx === 0) marker.openPopup();
+});
+
+// Espone la funzione per sharing
+window.shareCity = function(city, user){
+    sharedItems.push({city, user, what: "un luogo"});
+    updateSharedList();
+    addMessage(`${user} ha condiviso un luogo a ${city} sulla mappa!`, user);
+    joinLocalChat(city);
+    setTimeout(function(){
+        document.getElementById('chat-input').focus();
+    }, 100);
+};
+updateSharedList();
+
+//--- CHAT demo ---
+const chatBox = document.getElementById('chat-box');
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const demoChat = [
+    {user: "Luca", text: "Ciao a tutti, qualcuno sa dov'è un buon coworking a Napoli?"},
+    {user: "Matteo", text: "Io ieri ho visitato Impact Hub Firenze, è uno spazio top!"},
+    {user: "Alice", text: "Vi consiglio la Piadineria Re di Roma, ottima pausa pranzo."},
+    {user: "Laura", text: "Milano è piena di nomadi digitali oggi!"},
+];
+let demoIdx = 0;
+function showNextDemoMessage() {
+    if (demoIdx < demoChat.length) {
+        addMessage(demoChat[demoIdx].text, demoChat[demoIdx].user);
+        demoIdx++;
+        setTimeout(showNextDemoMessage, 2500);
+    }
+}
+function addMessage(msg, user = "Tu") {
+    const time = new Date().toLocaleTimeString().slice(0,5);
+    chatBox.innerHTML += `<div style="margin-bottom:7px"><strong>${user}:</strong> ${msg} <span style="color:#ffe5fa;font-size:0.82em">${time}</span></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+chatSend.addEventListener('click', function(){
+    const msg = chatInput.value.trim();
+    if(msg.length > 0) {
+        addMessage(msg, "Tu");
+        chatInput.value = '';
+    }
+});
+chatInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') chatSend.click();
+});
+addMessage("Benvenuto nella Chat dei Nomadi Digitali! Clicca sui marker per condividere (barra a sinistra).", "Sistema");
+setTimeout(showNextDemoMessage, 1200);
+
+window.joinLocalChat = function(city){
+    addMessage(`[Sei nella chat locale di ${city}]`, "Sistema");
+};
+</script>
+</body>
+</html>
