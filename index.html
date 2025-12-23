@@ -1,35 +1,1284 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-  <title>Nomadi Digitali - Home</title>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nomadi Digitali - Community App Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-    header { background: #379a7c; color: #fff; padding: 30px; text-align: center; }
-    main { padding: 40px 10px; text-align: center; }
-    a.button {
-      background: #379a7c;
-      color: #fff;
-      padding: 15px 30px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 1.2em;
-      transition: background 0.2s;
-      margin-top: 30px;
-      display: inline-block;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    a.button:hover { background: #28755c; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .app-container {
+      display: flex;
+      height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 0 50px rgba(0,0,0,0.3);
+    }
+    
+    /* Left Sidebar - Groups & Chats */
+    .sidebar {
+      width: 300px;
+      background: #f7f9fc;
+      border-right: 1px solid #e1e8ed;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .sidebar-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.5em;
+      margin-bottom: 5px;
+    }
+    
+    .sidebar-tabs {
+      display: flex;
+      background: white;
+      border-bottom: 2px solid #e1e8ed;
+    }
+    
+    .sidebar-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      font-weight: 600;
+      color: #666;
+    }
+    
+    .sidebar-tab:hover {
+      background: #f0f0f0;
+    }
+    
+    .sidebar-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: #f7f9fc;
+    }
+    
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .chat-item, .group-item {
+      padding: 15px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .chat-item:hover, .group-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: #667eea;
+    }
+    
+    .chat-item.active, .group-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #764ba2;
+    }
+    
+    .chat-name, .group-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 1.05em;
+    }
+    
+    .chat-preview, .group-members {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+    
+    .btn-new-group {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn-new-group:hover {
+      background: #764ba2;
+      transform: scale(1.02);
+    }
+    
+    /* Center Panel - Map or Chat */
+    .center-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+    
+    .center-header {
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .center-header h2 {
+      font-size: 1.3em;
+    }
+    
+    .view-toggle {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid white;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .view-toggle:hover {
+      background: white;
+      color: #667eea;
+    }
+    
+    #map {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .chat-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+    }
+    
+    .chat-view.active {
+      display: flex;
+    }
+    
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f7f9fc;
+    }
+    
+    .message {
+      margin-bottom: 15px;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .message-author {
+      font-weight: 600;
+      color: #667eea;
+      margin-right: 10px;
+    }
+    
+    .message-time {
+      font-size: 0.85em;
+      color: #999;
+    }
+    
+    .message-content {
+      background: white;
+      padding: 12px 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      max-width: 80%;
+    }
+    
+    .message-text {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .message-attachment {
+      margin-top: 10px;
+    }
+    
+    .message-attachment img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .message-attachment video {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .message-location {
+      background: #e8f0fe;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      color: #1a73e8;
+      font-size: 0.9em;
+    }
+    
+    .message-location::before {
+      content: "📍 ";
+    }
+    
+    .message-input-container {
+      padding: 20px;
+      background: white;
+      border-top: 1px solid #e1e8ed;
+    }
+    
+    .message-input-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    
+    .message-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 1em;
+      resize: none;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .message-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .input-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-attach, .btn-location, .btn-send {
+      width: 45px;
+      height: 45px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3em;
+      transition: all 0.3s;
+    }
+    
+    .btn-attach {
+      background: #f0f0f0;
+    }
+    
+    .btn-attach:hover {
+      background: #e0e0e0;
+    }
+    
+    .btn-location {
+      background: #e8f0fe;
+      color: #1a73e8;
+    }
+    
+    .btn-location:hover {
+      background: #d2e3fc;
+    }
+    
+    .btn-send {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-send:hover {
+      transform: scale(1.05);
+    }
+    
+    /* City Card Popup Styling */
+    .city-card {
+      min-width: 280px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    
+    .city-card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 8px 8px 0 0;
+      margin: -10px -10px 10px -10px;
+      text-align: center;
+    }
+    
+    .city-card-title {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .city-card-subtitle {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+    
+    .city-card-section {
+      margin: 12px 0;
+      padding: 10px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .city-card-label {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 5px;
+      font-size: 0.95em;
+    }
+    
+    .city-card-value {
+      color: #333;
+      font-size: 0.95em;
+    }
+    
+    .city-card-emoji {
+      margin-right: 5px;
+    }
+    
+    /* Upload Marker Popup */
+    .upload-marker {
+      background: #fff3cd;
+      border: 2px dashed #ffb700;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .upload-card {
+      min-width: 250px;
+    }
+    
+    .upload-card-header {
+      background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+      color: #333;
+      padding: 12px;
+      border-radius: 8px 8px 0 0;
+      margin: -10px -10px 10px -10px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .upload-card-content {
+      padding: 5px 0;
+    }
+    
+    .upload-card-author {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+    
+    .upload-card-text {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .upload-card-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-header {
+      font-size: 1.5em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+    
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .modal-input {
+      padding: 12px;
+      border: 2px solid #e1e8ed;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .modal-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1em;
+      transition: all 0.3s;
+    }
+    
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .modal-btn-primary:hover {
+      transform: scale(1.02);
+    }
+    
+    .modal-btn-secondary {
+      background: #f0f0f0;
+      color: #666;
+    }
+    
+    .modal-btn-secondary:hover {
+      background: #e0e0e0;
+    }
+    
+    .file-preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+    
+    .file-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+    
+    .empty-state-text {
+      font-size: 1.2em;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Benvenuto su Nomadi Digitali</h1>
-    <p>La community italiana per lavorare ovunque.</p>
-  </header>
-  <main>
-    <p>Scopri la <b>mappa interattiva</b> dei Nomadi Digitali!</p>
-    <a href="map.html" class="button">Vai alla Mappa</a>
-  </main>
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h1>🌍 Nomadi Digitali</h1>
+        <p>Community & Map</p>
+      </div>
+      
+      <div class="sidebar-tabs">
+        <div class="sidebar-tab active" data-tab="chats" onclick="switchSidebarTab('chats')">
+          Chats
+        </div>
+        <div class="sidebar-tab" data-tab="groups" onclick="switchSidebarTab('groups')">
+          Gruppi
+        </div>
+      </div>
+      
+      <div class="sidebar-content">
+        <!-- Chats Tab -->
+        <div id="chats-tab" class="tab-content">
+          <div class="chat-item" onclick="openChat('global', null)">
+            <div class="chat-name">🌐 Chat Globale</div>
+            <div class="chat-preview">Tutti i nomadi digitali</div>
+          </div>
+          <div id="private-chats-list"></div>
+        </div>
+        
+        <!-- Groups Tab -->
+        <div id="groups-tab" class="tab-content" style="display: none;">
+          <button class="btn-new-group" onclick="showNewGroupModal()">➕ Crea Nuovo Gruppo</button>
+          <div id="groups-list"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Center Panel -->
+    <div class="center-panel">
+      <div class="center-header">
+        <h2 id="center-title">🗺️ Mappa Interattiva</h2>
+        <button class="view-toggle" onclick="toggleView()">
+          <span id="toggle-text">Vai alla Chat</span>
+        </button>
+      </div>
+      
+      <!-- Map View -->
+      <div id="map"></div>
+      
+      <!-- Chat View -->
+      <div class="chat-view" id="chat-view">
+        <div class="messages-container" id="messages-container">
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-text">Seleziona una chat per iniziare</div>
+          </div>
+        </div>
+        
+        <div class="message-input-container">
+          <div class="message-input-wrapper">
+            <textarea class="message-input" id="message-input" rows="1" placeholder="Scrivi un messaggio..."></textarea>
+            <div class="input-actions">
+              <button class="btn-attach" onclick="document.getElementById('file-input').click()" title="Allega file">
+                📎
+              </button>
+              <input type="file" id="file-input" accept="image/*,video/*" onchange="handleFileSelect(event)">
+              <button class="btn-location" onclick="shareLocation()" title="Condividi posizione">
+                📍
+              </button>
+              <button class="btn-send" onclick="sendMessage()" title="Invia">
+                ✈️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- New Group Modal -->
+  <div class="modal" id="new-group-modal">
+    <div class="modal-content">
+      <div class="modal-header">Crea Nuovo Gruppo</div>
+      <form class="modal-form" onsubmit="createGroup(event)">
+        <input type="text" class="modal-input" id="group-name-input" placeholder="Nome del gruppo" required>
+        <textarea class="modal-input" id="group-description-input" rows="3" placeholder="Descrizione (opzionale)"></textarea>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">Annulla</button>
+          <button type="submit" class="modal-btn modal-btn-primary">Crea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // ========== STATE MANAGEMENT ==========
+    let currentView = 'map'; // 'map' or 'chat'
+    let activeChat = null; // {type: 'global'|'group'|'private', id: groupId or userId}
+    let currentUser = 'User_' + Math.floor(Math.random() * 1000);
+    let selectedFile = null;
+    
+    // Demo data
+    const cities = [
+      {
+        name: 'Milano',
+        lat: 45.4642,
+        lng: 9.1900,
+        country: 'Italia 🇮🇹',
+        nomads: 1250,
+        coworking: 45,
+        hotel: '€35/notte - Ostello Milano Central',
+        event: '🎨 Meetup Design Thinking - Venerdì 19:00'
+      },
+      {
+        name: 'Lisbona',
+        lat: 38.7223,
+        lng: -9.1393,
+        country: 'Portogallo 🇵🇹',
+        nomads: 3500,
+        coworking: 78,
+        hotel: '€25/notte - Lisbon Lounge Hostel',
+        event: '🎭 Festa degli Expat - Sabato 21:00'
+      },
+      {
+        name: 'Berlino',
+        lat: 52.5200,
+        lng: 13.4050,
+        country: 'Germania 🇩🇪',
+        nomads: 2100,
+        coworking: 92,
+        hotel: '€30/notte - Generator Berlin',
+        event: '🎵 Techno Night - Giovedì 23:00'
+      },
+      {
+        name: 'Barcellona',
+        lat: 41.3851,
+        lng: 2.1734,
+        country: 'Spagna 🇪🇸',
+        nomads: 2800,
+        coworking: 65,
+        hotel: '€28/notte - Barcelona Beach Hostel',
+        event: '🏖️ Beach Volleyball - Domenica 16:00'
+      },
+      {
+        name: 'Budapest',
+        lat: 47.4979,
+        lng: 19.0402,
+        country: 'Ungheria 🇭🇺',
+        nomads: 1800,
+        coworking: 38,
+        hotel: '€20/notte - Budapest Party Hostel',
+        event: '🌉 Crociera sul Danubio - Venerdì 18:00'
+      },
+      {
+        name: 'Praga',
+        lat: 50.0755,
+        lng: 14.4378,
+        country: 'Rep. Ceca 🇨🇿',
+        nomads: 1600,
+        coworking: 42,
+        hotel: '€22/notte - Prague Center Hostel',
+        event: '🍺 Beer Tasting Tour - Sabato 17:00'
+      }
+    ];
+    
+    // Initialize localStorage data
+    function initializeData() {
+      if (!localStorage.getItem('groups')) {
+        localStorage.setItem('groups', JSON.stringify([
+          {
+            id: 'group_1',
+            name: '🇮🇹 Nomadi Italiani',
+            description: 'Gruppo per nomadi digitali italiani',
+            members: ['User_123', 'User_456', currentUser],
+            messages: []
+          },
+          {
+            id: 'group_2',
+            name: '💻 Remote Workers',
+            description: 'Condividi tips e strumenti',
+            members: ['User_789', currentUser],
+            messages: []
+          }
+        ]));
+      }
+      
+      if (!localStorage.getItem('globalMessages')) {
+        localStorage.setItem('globalMessages', JSON.stringify([
+          {
+            author: 'User_123',
+            text: 'Ciao a tutti! Chi è a Lisbona questa settimana?',
+            time: new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            author: 'User_456',
+            text: 'Io ci sono! Vuoi vederci per un caffè?',
+            time: new Date(Date.now() - 1800000).toISOString()
+          }
+        ]));
+      }
+      
+      if (!localStorage.getItem('uploadMarkers')) {
+        localStorage.setItem('uploadMarkers', JSON.stringify([]));
+      }
+      
+      if (!localStorage.getItem('privateChats')) {
+        localStorage.setItem('privateChats', JSON.stringify([]));
+      }
+    }
+    
+    // ========== MAP INITIALIZATION ==========
+    let map;
+    
+    function initializeMap() {
+      try {
+        if (typeof L === 'undefined') {
+          console.warn('Leaflet not loaded, map functionality will be limited');
+          return;
+        }
+        
+        map = L.map('map').setView([48.8566, 2.3522], 5);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        addCityMarkers();
+        loadUploadMarkers();
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    }
+    
+    function addCityMarkers() {
+      if (!map || typeof L === 'undefined') return;
+    
+      cities.forEach(city => {
+      const marker = L.marker([city.lat, city.lng], {
+        icon: L.divIcon({
+          className: 'city-marker',
+          html: '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white;">📍</div>',
+          iconSize: [36, 36]
+        })
+      }).addTo(map);
+      
+      const popupContent = `
+        <div class="city-card">
+          <div class="city-card-header">
+            <div class="city-card-title">${city.name}</div>
+            <div class="city-card-subtitle">${city.country}</div>
+          </div>
+          
+          <div class="city-card-section">
+            <div class="city-card-label">
+              <span class="city-card-emoji">👥</span>Nomadi Digitali
+            </div>
+            <div class="city-card-value">${city.nomads} nomadi attivi</div>
+          </div>
+          
+          <div class="city-card-section">
+            <div class="city-card-label">
+              <span class="city-card-emoji">💼</span>Spazi Coworking
+            </div>
+            <div class="city-card-value">${city.coworking} spazi disponibili</div>
+          </div>
+          
+          <div class="city-card-section">
+            <div class="city-card-label">
+              <span class="city-card-emoji">🏨</span>Hotel Economico
+            </div>
+            <div class="city-card-value">${city.hotel}</div>
+          </div>
+          
+          <div class="city-card-section">
+            <div class="city-card-label">
+              <span class="city-card-emoji">📅</span>Evento della Settimana
+            </div>
+            <div class="city-card-value">${city.event}</div>
+          </div>
+        </div>
+      `;
+      
+      marker.bindPopup(popupContent, {
+        maxWidth: 320,
+        className: 'city-popup'
+      });
+    });
+    }
+    
+    // Add upload markers from localStorage
+    function loadUploadMarkers() {
+      if (!map || typeof L === 'undefined') return;
+      
+      const markers = JSON.parse(localStorage.getItem('uploadMarkers') || '[]');
+      markers.forEach(markerData => {
+        addUploadMarkerToMap(markerData);
+      });
+    }
+    
+    function addUploadMarkerToMap(markerData) {
+      if (!map || typeof L === 'undefined') return;
+      
+      const marker = L.marker([markerData.lat, markerData.lng], {
+        icon: L.divIcon({
+          className: 'upload-marker',
+          html: '📌',
+          iconSize: [30, 30]
+        })
+      }).addTo(map);
+      
+      let popupContent = `
+        <div class="upload-card">
+          <div class="upload-card-header">📤 Posizione Condivisa</div>
+          <div class="upload-card-content">
+            <div class="upload-card-author">👤 ${markerData.author}</div>
+            <div class="upload-card-text">${markerData.text}</div>
+      `;
+      
+      if (markerData.file) {
+        if (markerData.file.type.startsWith('image/')) {
+          popupContent += `<img src="${markerData.file.url}" class="upload-card-image" alt="${markerData.file.name}">`;
+        } else if (markerData.file.type.startsWith('video/')) {
+          popupContent += `<video src="${markerData.file.url}" class="upload-card-image" controls></video>`;
+        }
+      }
+      
+      popupContent += `
+          </div>
+        </div>
+      `;
+      
+      marker.bindPopup(popupContent, {
+        maxWidth: 300,
+        className: 'upload-popup'
+      });
+    }
+    
+    // ========== SIDEBAR & NAVIGATION ==========
+    function switchSidebarTab(tab) {
+      document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.sidebar-tab[data-tab="${tab}"]`).classList.add('active');
+      
+      if (tab === 'chats') {
+        document.getElementById('chats-tab').style.display = 'block';
+        document.getElementById('groups-tab').style.display = 'none';
+      } else {
+        document.getElementById('chats-tab').style.display = 'none';
+        document.getElementById('groups-tab').style.display = 'block';
+      }
+    }
+    
+    function toggleView() {
+      if (currentView === 'map') {
+        currentView = 'chat';
+        document.getElementById('map').style.display = 'none';
+        document.getElementById('chat-view').classList.add('active');
+        document.getElementById('toggle-text').textContent = 'Vai alla Mappa';
+        document.getElementById('center-title').textContent = '💬 Chat';
+      } else {
+        currentView = 'map';
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('chat-view').classList.remove('active');
+        document.getElementById('toggle-text').textContent = 'Vai alla Chat';
+        document.getElementById('center-title').textContent = '🗺️ Mappa Interattiva';
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+    }
+    
+    // ========== CHAT MANAGEMENT ==========
+    function openChat(type, id) {
+      activeChat = {type, id};
+      
+      // Update UI
+      document.querySelectorAll('.chat-item, .group-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      if (type === 'global') {
+        document.querySelectorAll('.chat-item')[0].classList.add('active');
+        document.getElementById('center-title').textContent = '🌐 Chat Globale';
+      } else if (type === 'group') {
+        const groups = JSON.parse(localStorage.getItem('groups'));
+        const group = groups.find(g => g.id === id);
+        if (group) {
+          document.getElementById('center-title').textContent = group.name;
+          document.querySelector(`[data-group-id="${id}"]`)?.classList.add('active');
+        }
+      } else if (type === 'private') {
+        document.getElementById('center-title').textContent = `💬 Chat con ${id}`;
+        document.querySelector(`[data-user-id="${id}"]`)?.classList.add('active');
+      }
+      
+      if (currentView === 'map') {
+        toggleView();
+      }
+      
+      renderMessages();
+    }
+    
+    function renderMessages() {
+      const container = document.getElementById('messages-container');
+      
+      if (!activeChat) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-text">Seleziona una chat per iniziare</div>
+          </div>
+        `;
+        return;
+      }
+      
+      let messages = [];
+      
+      if (activeChat.type === 'global') {
+        messages = JSON.parse(localStorage.getItem('globalMessages') || '[]');
+      } else if (activeChat.type === 'group') {
+        const groups = JSON.parse(localStorage.getItem('groups'));
+        const group = groups.find(g => g.id === activeChat.id);
+        messages = group ? group.messages : [];
+      } else if (activeChat.type === 'private') {
+        const privateChats = JSON.parse(localStorage.getItem('privateChats') || '[]');
+        const chat = privateChats.find(c => c.userId === activeChat.id);
+        messages = chat ? chat.messages : [];
+      }
+      
+      if (messages.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-text">Nessun messaggio ancora. Inizia la conversazione!</div>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = messages.map(msg => {
+        const time = new Date(msg.time);
+        const timeStr = time.toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'});
+        
+        let attachmentHtml = '';
+        if (msg.file) {
+          if (msg.file.type.startsWith('image/')) {
+            attachmentHtml = `<div class="message-attachment"><img src="${msg.file.url}" alt="${msg.file.name}"></div>`;
+          } else if (msg.file.type.startsWith('video/')) {
+            attachmentHtml = `<div class="message-attachment"><video src="${msg.file.url}" controls></video></div>`;
+          }
+        }
+        
+        let locationHtml = '';
+        if (msg.location) {
+          locationHtml = `<div class="message-location">Lat: ${msg.location.lat.toFixed(4)}, Lng: ${msg.location.lng.toFixed(4)}</div>`;
+        }
+        
+        return `
+          <div class="message">
+            <div class="message-header">
+              <div class="message-author">${msg.author}</div>
+              <div class="message-time">${timeStr}</div>
+            </div>
+            <div class="message-content">
+              ${msg.text ? `<div class="message-text">${msg.text}</div>` : ''}
+              ${attachmentHtml}
+              ${locationHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    function sendMessage() {
+      if (!activeChat) {
+        alert('Seleziona una chat prima di inviare un messaggio');
+        return;
+      }
+      
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      
+      if (!text && !selectedFile) {
+        return;
+      }
+      
+      const message = {
+        author: currentUser,
+        text: text,
+        time: new Date().toISOString()
+      };
+      
+      if (selectedFile) {
+        message.file = selectedFile;
+        selectedFile = null;
+      }
+      
+      if (activeChat.type === 'global') {
+        const messages = JSON.parse(localStorage.getItem('globalMessages') || '[]');
+        messages.push(message);
+        localStorage.setItem('globalMessages', JSON.stringify(messages));
+      } else if (activeChat.type === 'group') {
+        const groups = JSON.parse(localStorage.getItem('groups'));
+        const group = groups.find(g => g.id === activeChat.id);
+        if (group) {
+          group.messages.push(message);
+          localStorage.setItem('groups', JSON.stringify(groups));
+        }
+      } else if (activeChat.type === 'private') {
+        const privateChats = JSON.parse(localStorage.getItem('privateChats') || '[]');
+        let chat = privateChats.find(c => c.userId === activeChat.id);
+        if (!chat) {
+          chat = {userId: activeChat.id, messages: []};
+          privateChats.push(chat);
+        }
+        chat.messages.push(message);
+        localStorage.setItem('privateChats', JSON.stringify(privateChats));
+      }
+      
+      input.value = '';
+      renderMessages();
+    }
+    
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        alert('Per favore seleziona un file immagine o video');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedFile = {
+          name: file.name,
+          type: file.type,
+          url: e.target.result
+        };
+        alert('File selezionato: ' + file.name + '\nInvia il messaggio per caricarlo.');
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function shareLocation() {
+      if (!activeChat) {
+        alert('Seleziona una chat prima di condividere la posizione');
+        return;
+      }
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const message = {
+              author: currentUser,
+              text: 'Ha condiviso la sua posizione',
+              time: new Date().toISOString(),
+              location: {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              }
+            };
+            
+            // Add marker to map
+            const markerData = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              author: currentUser,
+              text: 'La mia posizione attuale',
+              file: selectedFile
+            };
+            
+            const markers = JSON.parse(localStorage.getItem('uploadMarkers') || '[]');
+            markers.push(markerData);
+            localStorage.setItem('uploadMarkers', JSON.stringify(markers));
+            addUploadMarkerToMap(markerData);
+            
+            // Send message
+            if (activeChat.type === 'global') {
+              const messages = JSON.parse(localStorage.getItem('globalMessages') || '[]');
+              messages.push(message);
+              localStorage.setItem('globalMessages', JSON.stringify(messages));
+            } else if (activeChat.type === 'group') {
+              const groups = JSON.parse(localStorage.getItem('groups'));
+              const group = groups.find(g => g.id === activeChat.id);
+              if (group) {
+                group.messages.push(message);
+                localStorage.setItem('groups', JSON.stringify(groups));
+              }
+            }
+            
+            selectedFile = null;
+            renderMessages();
+          },
+          error => {
+            // Use demo location if geolocation fails
+            const demoLat = 45.4642 + (Math.random() - 0.5) * 0.1;
+            const demoLng = 9.1900 + (Math.random() - 0.5) * 0.1;
+            
+            const message = {
+              author: currentUser,
+              text: 'Ha condiviso una posizione (demo)',
+              time: new Date().toISOString(),
+              location: {
+                lat: demoLat,
+                lng: demoLng
+              }
+            };
+            
+            const markerData = {
+              lat: demoLat,
+              lng: demoLng,
+              author: currentUser,
+              text: document.getElementById('message-input').value || 'Posizione condivisa',
+              file: selectedFile
+            };
+            
+            const markers = JSON.parse(localStorage.getItem('uploadMarkers') || '[]');
+            markers.push(markerData);
+            localStorage.setItem('uploadMarkers', JSON.stringify(markers));
+            addUploadMarkerToMap(markerData);
+            
+            if (activeChat.type === 'global') {
+              const messages = JSON.parse(localStorage.getItem('globalMessages') || '[]');
+              messages.push(message);
+              localStorage.setItem('globalMessages', JSON.stringify(messages));
+            } else if (activeChat.type === 'group') {
+              const groups = JSON.parse(localStorage.getItem('groups'));
+              const group = groups.find(g => g.id === activeChat.id);
+              if (group) {
+                group.messages.push(message);
+                localStorage.setItem('groups', JSON.stringify(groups));
+              }
+            }
+            
+            selectedFile = null;
+            document.getElementById('message-input').value = '';
+            renderMessages();
+          }
+        );
+      } else {
+        alert('Geolocalizzazione non supportata dal browser');
+      }
+    }
+    
+    // ========== GROUP MANAGEMENT ==========
+    function renderGroups() {
+      const groups = JSON.parse(localStorage.getItem('groups') || '[]');
+      const container = document.getElementById('groups-list');
+      
+      container.innerHTML = groups.map(group => `
+        <div class="group-item" data-group-id="${group.id}" onclick="openChat('group', '${group.id}')">
+          <div class="group-name">${group.name}</div>
+          <div class="group-members">${group.members.length} membri</div>
+        </div>
+      `).join('');
+    }
+    
+    function showNewGroupModal() {
+      document.getElementById('new-group-modal').classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('new-group-modal').classList.remove('active');
+      document.getElementById('group-name-input').value = '';
+      document.getElementById('group-description-input').value = '';
+    }
+    
+    function createGroup(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('group-name-input').value;
+      const description = document.getElementById('group-description-input').value;
+      
+      const groups = JSON.parse(localStorage.getItem('groups') || '[]');
+      const newGroup = {
+        id: 'group_' + Date.now(),
+        name: name,
+        description: description,
+        members: [currentUser],
+        messages: []
+      };
+      
+      groups.push(newGroup);
+      localStorage.setItem('groups', JSON.stringify(groups));
+      
+      closeModal();
+      renderGroups();
+      openChat('group', newGroup.id);
+    }
+    
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeData();
+      renderGroups();
+      initializeMap();
+      
+      // Add Enter key support for sending messages
+      document.getElementById('message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
