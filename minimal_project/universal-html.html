@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Social Map — Carte città (popup cartoon)</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    html,body,#map { height:100%; margin:0; padding:0; font-family: 'Nunito', sans-serif; }
+    .leaflet-popup { z-index: 100000 !important; }
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px !important;
+      border: 3px solid #f0c27b !important;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+      background: linear-gradient(180deg,#fffbe6 0%, #fff 60%) !important;
+      padding: 0 !important;
+    }
+    .leaflet-popup-tip { background: transparent !important; pointer-events:none; }
+    .city-card { width: 320px; padding: 12px; color: #222; line-height:1.25; }
+    .city-card .header { display:flex; gap:10px; align-items:center; }
+    .city-card .city-name { font-family: 'Patrick Hand', cursive; font-size:20px; font-weight:700; color:#2b3a42; }
+    .city-card .badge { margin-left:auto; background: linear-gradient(180deg,#ffd54a,#ffb300); padding:6px 10px; border-radius:999px; font-weight:700; color:#3b2f0b; font-size:13px; }
+    .city-card .section { margin-top:10px; display:flex; gap:8px; }
+    .city-card .col { flex:1; background: rgba(255,255,255,0.6); padding:8px; border-radius:8px; border:1px dashed rgba(0,0,0,0.06); }
+    .city-card ul { margin:6px 0 0 16px; padding:0; }
+    .top-cowork { display:flex; gap:8px; align-items:center; font-weight:700; color:#1b3a4b; }
+    .top-cowork .star { color:#ffb300; font-weight:900; margin-left:auto; }
+    .events { margin-top:8px; background: linear-gradient(180deg,#eaffea,#f1fff1); padding:8px; border-radius:8px; font-size:13px; }
+
+    /* marker-image */
+    .marker-img { width:48px; height:48px; display:block; cursor:pointer !important; pointer-events:auto !important; }
+    .marker-image-icon { cursor:pointer !important; pointer-events:auto !important; }
+    .leaflet-marker-icon { cursor:pointer !important; pointer-events:auto !important; }
+
+    /* debug */
+    #debug {
+      position: absolute; right: 12px; top: 12px; background: rgba(255,255,255,0.95);
+      border-radius: 8px; padding: 8px 10px; font-size:12px; color:#222; z-index:100001;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12); max-width:360px;
+    }
+    #debug h4 { margin:0 0 6px 0; font-size:13px; font-weight:700; font-family: 'Patrick Hand', cursive; }
+    #debug pre { margin:0; max-height:220px; overflow:auto; font-size:12px; background:transparent; border:0; white-space:pre-wrap; word-break:break-word; }
+    @media (max-width:480px){ #debug { display:none; } }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="debug" aria-hidden="false">
+    <h4>Debug</h4>
+    <div id="dbg-last">inizializzazione...</div>
+    <pre id="dbg-log"></pre>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script>
+    (function(){
+      const dbg = (m) => {
+        try {
+          const p = document.getElementById('dbg-log');
+          const l = document.getElementById('dbg-last');
+          l.textContent = String(m).slice(0,80);
+          p.textContent = (p.textContent ? p.textContent + "\n" : "") + new Date().toLocaleTimeString() + " — " + m;
+          console.log("[MAP DEBUG]", m);
+        } catch(e){ console.log("[MAP DEBUG FAIL]", e); }
+      };
+
+      // CONFIG: lista cities (usa la tua fonte reale se vuoi)
+      const initialView = { lat: 20.0, lng: 0.0, zoom: 2.2 };
+      const cities = [
+        { id: 'rome', name: 'Roma', lat: 41.9028, lng: 12.4964 },
+        { id: 'lisbon', name: 'Lisbon', lat: 38.7223, lng: -9.1393 },
+        { id: 'bali', name: 'Canggu (Bali)', lat: -8.6455, lng: 115.1385 }
+      ];
+
+      // Build an SVG data-URI for consistent clickable marker <img>
+      function buildSvgDataUrl(color = '#ff7b7b') {
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
+          <defs><filter id='s' x='-50%' y='-50%' width='200%' height='200%'><feDropShadow dx='0' dy='4' stdDeviation='6' flood-color='#000' flood-opacity='0.18'/></filter></defs>
+          <g filter='url(#s)'>
+            <circle cx='32' cy='24' r='18' fill='${color}' stroke='#e65' stroke-width='3'/>
+            <path d='M32 44 C28 40, 20 32, 32 18 C44 32, 36 40, 32 44 Z' fill='${color}' opacity='0.9'/>
+            <text x='32' y='28' font-size='18' text-anchor='middle' font-family='sans-serif' fill='#fff'>🏙️</text>
+          </g>
+        </svg>`;
+        return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+      }
+
+      // Fetch city data from backend API. Expects JSON { nomads, hotels:[], top_cowork:{name,votes}, events:[] }
+      async function fetchCityData(cityId){
+        dbg("fetchCityData " + cityId);
+        try {
+          const resp = await fetch(`/api/cities/${encodeURIComponent(cityId)}`);
+          if (resp.ok) {
+            const json = await resp.json();
+            dbg("API ok: " + cityId);
+            return json;
+          }
+          dbg('API non ok: ' + resp.status);
+        } catch (e) {
+          dbg('fetch error: ' + (e && e.message ? e.message : e));
+        }
+        // fallback empty object (no crash)
+        return { nomads:0, hotels:[], top_cowork:{name:'—',votes:0}, events:[] };
+      }
+
+      function escapeHtml(str){
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+      }
+
+      function buildCityCardHtml(city, data){
+        return `
+          <div class="city-card" role="dialog" aria-label="Carta d'identità di ${escapeHtml(city.name)}">
+            <div class="header">
+              <div>
+                <div class="city-name">${escapeHtml(city.name)}</div>
+                <div style="font-size:12px;color:#5a6b71;margin-top:2px;">Carta d'identità della città</div>
+              </div>
+              <div class="badge">${escapeHtml(data.nomads)}</div>
+            </div>
+
+            <div class="section">
+              <div class="col">
+                <strong>Hotel & Ostelli</strong>
+                <ul>
+                  ${data.hotels && data.hotels.length ? data.hotels.map(h => `<li>${escapeHtml(h)}</li>`).join('') : '<li>Nessun dato</li>'}
+                </ul>
+              </div>
+              <div class="col">
+                <div class="top-cowork">
+                  <div>📍 ${escapeHtml(data.top_cowork?.name || '—')}</div>
+                  <div class="star">★ ${escapeHtml(data.top_cowork?.votes || 0)}</div>
+                </div>
+
+                <div class="events" aria-live="polite">
+                  <strong>Eventi</strong>
+                  <ul style="margin:6px 0 0 16px;padding:0;">
+                    ${data.events && data.events.length ? data.events.map(ev => `<li>${escapeHtml(ev.title)} — <small>${escapeHtml(ev.date)}</small></li>`).join('') : '<li>Nessun evento</li>'}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+              <button style="flex:1;border-radius:10px;border:0;padding:8px;background:#7bd389;color:#063;cursor:pointer;font-weight:700;" data-action="details">Vedi dettagli</button>
+              <button style="padding:6px 10px;border-radius:10px;border:1px solid #ffd1d1;background:#fff;color:#b33;cursor:pointer;" data-action="report">Segnala</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function init(){
+        if (typeof L === 'undefined') { dbg("Leaflet non caricato: L undefined"); return; }
+        dbg("Init map");
+        const map = L.map('map', { zoomControl:true }).setView([initialView.lat, initialView.lng], initialView.zoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+        const markerGroup = L.featureGroup().addTo(map);
+
+        cities.forEach((city, i) => {
+          const color = ['#ff7b7b','#ffd77b','#b3f49b'][i % 3];
+          const svgUrl = buildSvgDataUrl(color);
+
+          const icon = L.icon({ iconUrl: svgUrl, iconSize:[48,48], iconAnchor:[24,48], popupAnchor:[0,-56], className:'marker-image-icon' });
+          const marker = L.marker([city.lat, city.lng], { icon, title: city.name }).addTo(markerGroup);
+
+          const loadingHtml = `<div class="city-card"><div style="text-align:center;padding:28px 0;color:#6b6b6b;">Caricamento…</div></div>`;
+          marker.bindPopup(loadingHtml, { maxWidth:360, closeButton:true, className:'cartoon-popup', autoPan:true });
+
+          // Standard handler: open, fetch, update
+          marker.on('click', async () => {
+            dbg("marker click: " + city.id);
+            marker.openPopup();
+            try {
+              const data = await fetchCityData(city.id);
+              const content = buildCityCardHtml(city, data);
+              const popup = marker.getPopup();
+              if (popup) {
+                popup.setContent(content);
+                try { popup.update && popup.update(); } catch(e){ dbg('popup.update err ' + e); }
+                try {
+                  const px = map.project(marker.getLatLng());
+                  map.panTo(map.unproject([px.x, px.y - 120]), { animate:true, duration:0.25 });
+                } catch(e){}
+                dbg("popup updated for " + city.id);
+              } else {
+                marker.bindPopup(content, { maxWidth:360, className:'cartoon-popup' }).openPopup();
+                dbg("popup rebound+opened for " + city.id);
+              }
+            } catch (err) {
+              dbg("fetch error: " + (err && err.message ? err.message : err));
+            }
+          });
+
+          // Fallback: attach click to the underlying <img> to be 100% reliable across browsers
+          marker.on('add', () => {
+            const el = marker.getElement();
+            if (!el) { dbg("marker element not available for " + city.id); return; }
+            const img = el.querySelector('img');
+            if (img) {
+              img.classList.add('marker-img');
+              img.style.cursor = 'pointer';
+              img.style.pointerEvents = 'auto';
+              // Previene il comportamento default e forza l'apertura
+              img.addEventListener('click', (e) => { 
+                e.stopPropagation();
+                e.preventDefault();
+                dbg("img click -> fire marker click: " + city.id); 
+                marker.fire('click');
+              }, true);
+            }
+            el.style.cursor = 'pointer';
+            el.style.pointerEvents = 'auto';
+            el.addEventListener('click', (e) => { 
+              e.stopPropagation();
+              dbg("el click -> fire marker click: " + city.id); 
+              marker.fire('click');
+            }, true);
+            el.setAttribute('tabindex','0');
+            el.addEventListener('keydown', (ev) => {
+              if (ev.key === 'Enter' || ev.key === ' ') { 
+                ev.preventDefault(); 
+                marker.fire('click');
+              }
+            });
+          });
+        });
+
+        // Event delegation per button nei popup
+        map.on('popupopen', (e) => {
+          const popup = e.popup;
+          const content = popup.getElement();
+          if (content) {
+            content.addEventListener('click', (evt) => {
+              const btn = evt.target.closest('button');
+              if (!btn) return;
+              const action = btn.getAttribute('data-action');
+              if (action === 'details') {
+                dbg('Button details clicked');
+                alert('Funzionalità dettagli non ancora implementata');
+              } else if (action === 'report') {
+                dbg('Button report clicked');
+                alert('Funzionalità segnalazione non ancora implementata');
+              }
+            });
+          }
+        });
+
+        // Fit bounds so markers visible
+        if (cities.length) map.fitBounds(markerGroup.getBounds().pad(0.4));
+        dbg("Map ready with " + cities.length + " markers");
+
+        // -----------------------------
+        // Robust fallback (proximity click)
+        // -----------------------------
+        (function enableProximityPopupFallback(mapInstance, markerLayerGroup) {
+          if (!mapInstance || !markerLayerGroup) { dbg("fallback not enabled: map or markerGroup missing"); return; }
+          const RADIUS_PX = 36; // distanza di tolleranza in pixel (aumentare se marker piccoli o difficile da cliccare)
+
+          // change cursor when near a marker (UX)
+          mapInstance.on('mousemove', function(e) {
+            let near = false;
+            markerLayerGroup.eachLayer(function(m) {
+              const pt = mapInstance.latLngToLayerPoint(m.getLatLng());
+              const dx = pt.x - e.layerPoint.x;
+              const dy = pt.y - e.layerPoint.y;
+              if (Math.hypot(dx, dy) <= RADIUS_PX) { near = true; return; }
+            });
+            mapInstance.getContainer().style.cursor = near ? 'pointer' : '';
+          });
+
+          // on map click, if within proximity of a marker, open its popup
+          mapInstance.on('click', function(e) {
+            let chosen = null;
+            let bestDist = Infinity;
+            markerLayerGroup.eachLayer(function(m) {
+              const pt = mapInstance.latLngToLayerPoint(m.getLatLng());
+              const dx = pt.x - e.layerPoint.x;
+              const dy = pt.y - e.layerPoint.y;
+              const d = Math.hypot(dx, dy);
+              if (d < bestDist) { bestDist = d; chosen = m; }
+            });
+            if (chosen && bestDist <= RADIUS_PX) {
+              dbg("proximity fallback triggered (dist px=" + Math.round(bestDist) + ")");
+              chosen.fire('click');
+            }
+          });
+
+          dbg("Proximity fallback enabled (radius px=" + RADIUS_PX + ")");
+        })(map, markerGroup);
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
+
+      window.addEventListener('error', (e) => dbg('JS Error: ' + (e && e.message ? e.message : e)));
+      window.addEventListener('unhandledrejection', (e) => dbg('PromiseRejection: ' + (e && e.reason ? (e.reason.message || e.reason) : e)));
+    })();
+  </script>
+</body>
+</html>
